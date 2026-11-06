@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>SmoothieTuber</title>
-
+<script src="./support.js"></script>
 </head>
 <body>
 <x-dc>
@@ -26,12 +26,13 @@ a{color:inherit;text-decoration:none}
   border: 3px solid #2B2547;
   border-radius: 8px;
   box-shadow: 8px 8px 0px #F5917B;
-  padding: 14px 14px 40px;
+  padding: 14px 14px 38px;
   transform: rotate(-2.5deg);
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
   cursor: pointer;
   width: 100%;
-  max-width: 320px;
+  max-width: 290px;
+  box-sizing: border-box;
 }
 .polaroid-frame:hover {
   transform: rotate(0deg) scale(1.03) translateY(-4px);
@@ -88,7 +89,80 @@ a{color:inherit;text-decoration:none}
 }
 .hide-scrollbar::-webkit-scrollbar { display: none; }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-.tiktok-card { transition: transform 0.25s ease; }
+.tiktok-card { transition: transform 0.25s ease; flex: 0 0 250px; }
+.tiktok-card:hover { transform: translateY(-4px); }
+
+
+.polaroid-frame {
+  position: relative;
+  background: #FFFFFF;
+  border: 3px solid #2B2547;
+  border-radius: 8px;
+  box-shadow: 8px 8px 0px #F5917B;
+  padding: 14px 14px 38px;
+  transform: rotate(-2.5deg);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  cursor: pointer;
+  width: 100%;
+  max-width: 290px;
+  box-sizing: border-box;
+}
+.polaroid-frame:hover {
+  transform: rotate(0deg) scale(1.03) translateY(-4px);
+  box-shadow: 12px 12px 0px #F27F67;
+}
+.polaroid-window {
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(150deg, #A9BDF0 0%, #DCE6FB 100%);
+  border: 2px solid #2B2547;
+  border-radius: 4px;
+  position: relative;
+  overflow: visible;
+}
+@keyframes avatarFloat {
+  0%, 100% { transform: translateX(-50%) translateY(0px); }
+  50% { transform: translateX(-50%) translateY(-6px); }
+}
+@keyframes avatarGiggle {
+  0%, 100% { transform: translateX(-50%) translateY(-4px) rotate(0deg); }
+  25% { transform: translateX(-50%) translateY(-8px) rotate(-2deg); }
+  75% { transform: translateX(-50%) translateY(-7px) rotate(2deg); }
+}
+.avatar-pop-closed, .avatar-pop-open {
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 114%;
+  max-width: none;
+  transform: translateX(-50%);
+  transform-origin: 50% 100%;
+  transition: opacity 0.2s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+.avatar-pop-closed {
+  opacity: 1;
+  animation: avatarFloat 3.8s ease-in-out infinite;
+}
+.avatar-pop-open {
+  opacity: 0;
+}
+.polaroid-frame:hover .avatar-pop-closed {
+  opacity: 0;
+}
+.polaroid-frame:hover .avatar-pop-open {
+  opacity: 1;
+  animation: avatarGiggle 0.6s ease-in-out infinite;
+}
+.polaroid-frame.is-talking .avatar-pop-closed {
+  opacity: 0;
+}
+.polaroid-frame.is-talking .avatar-pop-open {
+  opacity: 1;
+  animation: avatarGiggle 0.4s ease-in-out infinite;
+}
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.tiktok-card { transition: transform 0.25s ease; flex: 0 0 250px; }
 .tiktok-card:hover { transform: translateY(-4px); }
 
 </style>
@@ -238,144 +312,141 @@ a{color:inherit;text-decoration:none}
 </div>
 
 
-<div style="max-width:1160px;margin:0 auto;padding:0 48px 100px" id="creator">
-<div class="reveal" style="background:#A9BDF0;border-radius:48px;padding:64px 48px;display:flex;flex-wrap:wrap;gap:56px;align-items:center;justify-content:space-between">
-
-<!-- Text Column (Matthew Kimberley inspired side-by-side) -->
-<div style="flex:1 1 440px;display:flex;flex-direction:column;gap:20px;max-width:600px">
-<span style="align-self:flex-start;background:#F7A9BA;padding:6px 20px;border-radius:999px;font-weight:700;font-size:14px">About the creator</span>
-<h2 style="margin:0;font-family:'Fraunces',serif;font-size:44px;line-height:1.15;font-weight:700">Halo, saya Anin (Ukiran Anin)!</h2>
-<div style="font-weight:700;font-size:16px;color:#2B2547;background:#FAF6EE;padding:6px 16px;border-radius:12px;align-self:flex-start">Children's Book Illustrator &amp; Voice Over Creator</div>
-<p style="margin:0">Saya suka bikin konten bercerita, tapi alergi banget tampil di depan kamera. Dulu saya capek sama aplikasi avatar yang berat, sering gagal instal, dan bikin laptop panas kayak kompor.</p>
-<p style="margin:0">SmoothieTuber lahir dari keresahan saya sendiri: pengen punya karakter yang geraknya lembut, estetik, dan hidup ngikutin suara. Cukup buka browser di PC atau HP, tanpa instal apa pun.</p>
-<p style="margin:0">Awalnya cuma buat saya pakai sendiri. Sekarang saya bagi buat kamu, sesama ilustrator dan kreator yang pengen karyanya lebih bernyawa.</p>
-</div>
-
-<!-- Animated Polaroid Column (Portfolio Style) -->
-<div style="flex:1 1 320px;max-width:380px;display:flex;justify-content:center;margin:0 auto">
-  <div id="polaroidBox" class="polaroid-frame" onclick="triggerTalking()">
-    <div class="polaroid-window">
-      <img src="assets/anin-closed.png" alt="Avatar Anin Menggambar" class="avatar-pop-closed">
-      <img src="assets/anin-open.png" alt="Avatar Anin Berbicara" class="avatar-pop-open">
-    </div>
-    <figcaption style="margin-top:12px;text-align:center;font-family:'Fraunces',serif;font-weight:700;font-size:18px;color:#2B2547">
-      Anin, drawing as usual ✦
-    </figcaption>
-    <div style="text-align:center;font-size:11px;opacity:0.75;margin-top:2px;font-weight:600">
-      (Sentuh / Hover untuk bicara 🎙️)
+<div style="max-width:1160px;margin:0 auto;padding:0 48px 120px;display:flex;flex-wrap:wrap;gap:72px;align-items:center" id="creator">
+  <!-- Avatar Box: BLUE BACKGROUND (#A9BDF0), NOT GREEN (#D8E55B)! -->
+  <div class="reveal" style="flex:1 1 320px;max-width:440px;background:#A9BDF0;border-radius:56px;padding:36px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(43,37,71,0.08)">
+    <div id="polaroidBox" class="polaroid-frame" onclick="triggerTalking()">
+      <div class="polaroid-window">
+        <img src="anin-closed.png" alt="Avatar Anin Menggambar" class="avatar-pop-closed">
+        <img src="anin-open.png" alt="Avatar Anin Berbicara" class="avatar-pop-open">
+      </div>
+      <figcaption style="margin-top:12px;text-align:center;font-family:'Fraunces',serif;font-weight:700;font-size:18px;color:#2B2547">
+        Anin, drawing as usual ✦
+      </figcaption>
+      <div style="text-align:center;font-size:11px;opacity:0.75;margin-top:2px;font-weight:600">
+        (Sentuh / Hover untuk bicara 🎙️)
+      </div>
     </div>
   </div>
-</div>
 
-</div>
+  <!-- Text Column -->
+  <div class="reveal" data-delay="150" style="flex:1 1 380px;display:flex;flex-direction:column;gap:24px">
+    <span style="align-self:flex-start;background:#F7A9BA;padding:6px 20px;border-radius:999px;font-weight:700;font-size:14px">About the creator</span>
+    <h2 style="margin:0;font-family:'Fraunces',serif;font-size:48px;line-height:1.15;font-weight:700">Halo, saya Anin (Ukiran Anin)!</h2>
+    <p style="margin:0;font-weight:700">Children's Book Illustrator &amp; Voice Over Creator</p>
+    <p style="margin:0">Saya suka bikin konten bercerita, tapi alergi banget tampil di depan kamera. Dulu saya capek sama aplikasi avatar yang berat, sering gagal instal, dan bikin laptop panas kayak kompor.</p>
+    <p style="margin:0">SmoothieTuber lahir dari keresahan saya sendiri: pengen punya karakter yang geraknya lembut, estetik, dan hidup ngikutin suara. Cukup buka browser di PC atau HP, tanpa instal apa pun.</p>
+    <p style="margin:0">Awalnya cuma buat saya pakai sendiri. Sekarang saya bagi buat kamu, sesama ilustrator dan kreator yang pengen karyanya lebih bernyawa.</p>
+  </div>
 </div>
 
 <!-- DERETAN VIDEO TIKTOK -->
-<div style="max-width:1160px;margin:0 auto;padding:0 48px 120px" id="tiktok-videos">
-<div class="reveal" style="display:flex;flex-direction:column;gap:24px">
+<div style="max-width:1160px;margin:0 auto;padding:0 48px 140px" id="tiktok-videos">
+  <div class="reveal" style="display:flex;flex-direction:column;gap:24px">
 
-<div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px">
-  <div style="max-width:640px;display:flex;flex-direction:column;gap:12px">
-    <span style="align-self:flex-start;background:#DEF7A0;padding:6px 20px;border-radius:999px;font-weight:700;font-size:14px">Konten nyata dengan SmoothieTuber</span>
-    <h2 style="margin:0;font-family:'Fraunces',serif;font-size:40px;line-height:1.15;font-weight:700">Lihat aksinya langsung di TikTok @ukiran_anin</h2>
-    <p style="margin:0;font-size:16px">Avatar 2D bergerak dan bereaksi langsung mengikuti suara rekaman. Klik salah satu video di bawah untuk menonton langsung di TikTok!</p>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px">
+      <div style="max-width:640px;display:flex;flex-direction:column;gap:12px">
+        <span style="align-self:flex-start;background:#DEF7A0;padding:6px 20px;border-radius:999px;font-weight:700;font-size:14px">Konten nyata dengan SmoothieTuber</span>
+        <h2 style="margin:0;font-family:'Fraunces',serif;font-size:40px;line-height:1.15;font-weight:700">Lihat aksinya langsung di TikTok @ukiran_anin</h2>
+        <p style="margin:0;font-size:16px">Avatar 2D bergerak dan bereaksi langsung mengikuti suara rekaman. Klik salah satu video di bawah untuk menonton langsung di TikTok!</p>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button onclick="scrollTikTok(-1)" style="all:unset;cursor:pointer;width:44px;height:44px;border-radius:50%;background:#FAF6EE;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;box-shadow:2px 2px 0 #2B2547">❮</button>
+        <button onclick="scrollTikTok(1)" style="all:unset;cursor:pointer;width:44px;height:44px;border-radius:50%;background:#FAF6EE;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;box-shadow:2px 2px 0 #2B2547">❯</button>
+      </div>
+    </div>
+
+    <!-- CAROUSEL TRACK -->
+    <div id="tiktokCarousel" style="display:flex;gap:20px;overflow-x:auto;padding:12px 4px 24px;scroll-behavior:smooth" class="hide-scrollbar">
+
+      <!-- Card 1 -->
+      <div class="tiktok-card">
+        <a href="https://vt.tiktok.com/ZSpjWWytv/" target="_blank" rel="noopener noreferrer" style="display:block;position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:3px solid #2B2547;box-shadow:5px 5px 0 #F5917B;background:#1E1B2E">
+          <img src="tiktok-1.jpg" alt="Video TikTok 1" style="width:100%;height:100%;object-fit:cover;display:block">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%)"></div>
+          <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px">TikTok VT</span></div>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+            <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
+            <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Tips Ilustrator</div>
+            <div style="font-size:14px;font-weight:700;line-height:1.3">Waktu kirim paling tepat yang mana?</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="tiktok-card">
+        <a href="https://vt.tiktok.com/ZSpj7CgTB/" target="_blank" rel="noopener noreferrer" style="display:block;position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:3px solid #2B2547;box-shadow:5px 5px 0 #F5917B;background:#1E1B2E">
+          <img src="tiktok-2.jpg" alt="Video TikTok 2" style="width:100%;height:100%;object-fit:cover;display:block">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%)"></div>
+          <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px">TikTok VT</span></div>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+            <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
+            <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Storytelling VO</div>
+            <div style="font-size:14px;font-weight:700;line-height:1.3">Dinamika Klien vs Ilustrator</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="tiktok-card">
+        <a href="https://vt.tiktok.com/ZSpj7Ch8p/" target="_blank" rel="noopener noreferrer" style="display:block;position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:3px solid #2B2547;box-shadow:5px 5px 0 #F5917B;background:#1E1B2E">
+          <img src="tiktok-3.jpg" alt="Video TikTok 3" style="width:100%;height:100%;object-fit:cover;display:block">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%)"></div>
+          <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px">TikTok VT</span></div>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+            <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
+            <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Creator Life</div>
+            <div style="font-size:14px;font-weight:700;line-height:1.3">Ngonten Faceless Sat-Set Pakai Avatar</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="tiktok-card">
+        <a href="https://vt.tiktok.com/ZSpj7XmBN/" target="_blank" rel="noopener noreferrer" style="display:block;position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:3px solid #2B2547;box-shadow:5px 5px 0 #F5917B;background:#1E1B2E">
+          <img src="tiktok-4.jpg" alt="Video TikTok 4" style="width:100%;height:100%;object-fit:cover;display:block">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%)"></div>
+          <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px">TikTok VT</span></div>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+            <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
+            <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Behind The Scene</div>
+            <div style="font-size:14px;font-weight:700;line-height:1.3">Dari Gambar Diam Jadi Karakter Hidup</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="tiktok-card">
+        <a href="https://vt.tiktok.com/ZSpj7kCmB/" target="_blank" rel="noopener noreferrer" style="display:block;position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:3px solid #2B2547;box-shadow:5px 5px 0 #F5917B;background:#1E1B2E">
+          <img src="tiktok-5.jpg" alt="Video TikTok 5" style="width:100%;height:100%;object-fit:cover;display:block">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%)"></div>
+          <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px">TikTok VT</span></div>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+            <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+          </div>
+          <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
+            <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Voice Over</div>
+            <div style="font-size:14px;font-weight:700;line-height:1.3">Ekspresi Reaktif Mengikuti Suara</div>
+          </div>
+        </a>
+      </div>
+
+    </div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;opacity:0.8;border-top:1px solid rgba(43,37,71,0.15);padding-top:12px">
+      <span>Geser ke samping untuk melihat seluruh video</span>
+      <a href="https://www.tiktok.com/@ukiran_anin" target="_blank" rel="noopener noreferrer" style="font-weight:700;text-decoration:underline">Buka Profil TikTok @ukiran_anin →</a>
+    </div>
+
   </div>
-  <div style="display:flex;gap:10px">
-    <button onclick="scrollTikTok(-1)" style="all:unset;cursor:pointer;width:44px;height:44px;border-radius:50%;background:#FAF6EE;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;box-shadow:2px 2px 0 #2B2547">❮</button>
-    <button onclick="scrollTikTok(1)" style="all:unset;cursor:pointer;width:44px;height:44px;border-radius:50%;background:#FAF6EE;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;box-shadow:2px 2px 0 #2B2547">❯</button>
-  </div>
-</div>
-
-<div id="tiktokCarousel" style="display:flex;gap:20px;overflow-x:auto;padding:12px 4px 24px;scroll-behavior:smooth" class="hide-scrollbar">
-
-  <!-- Card 1 -->
-  <div style="flex:0 0 250px" class="tiktok-card">
-    <a href="https://vt.tiktok.com/ZSpjWWytv/" target="_blank" rel="noopener noreferrer" style="display:block;position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:3px solid #2B2547;box-shadow:5px 5px 0 #F5917B;background:#1E1B2E">
-      <img src="assets/tiktok-1.jpg" alt="Video TikTok 1" style="width:100%;height:100%;object-fit:cover;display:block">
-      <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%)"></div>
-      <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px">TikTok VT</span></div>
-      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
-        <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-      </div>
-      <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
-        <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Tips Ilustrator</div>
-        <div style="font-size:14px;font-weight:700;line-height:1.3">Waktu kirim paling tepat yang mana?</div>
-      </div>
-    </a>
-  </div>
-
-  <!-- Card 2 -->
-  <div style="flex:0 0 250px" class="tiktok-card">
-    <a href="https://vt.tiktok.com/ZSpj7CgTB/" target="_blank" rel="noopener noreferrer" style="display:block;position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:3px solid #2B2547;box-shadow:5px 5px 0 #F5917B;background:#1E1B2E">
-      <img src="assets/tiktok-2.jpg" alt="Video TikTok 2" style="width:100%;height:100%;object-fit:cover;display:block">
-      <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%)"></div>
-      <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px">TikTok VT</span></div>
-      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
-        <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-      </div>
-      <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
-        <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Storytelling VO</div>
-        <div style="font-size:14px;font-weight:700;line-height:1.3">Dinamika Klien vs Ilustrator</div>
-      </div>
-    </a>
-  </div>
-
-  <!-- Card 3 -->
-  <div style="flex:0 0 250px" class="tiktok-card">
-    <a href="https://vt.tiktok.com/ZSpj7Ch8p/" target="_blank" rel="noopener noreferrer" style="display:block;position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:3px solid #2B2547;box-shadow:5px 5px 0 #F5917B;background:#1E1B2E">
-      <img src="assets/tiktok-3.jpg" alt="Video TikTok 3" style="width:100%;height:100%;object-fit:cover;display:block">
-      <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%)"></div>
-      <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px">TikTok VT</span></div>
-      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
-        <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-      </div>
-      <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
-        <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Creator Life</div>
-        <div style="font-size:14px;font-weight:700;line-height:1.3">Ngonten Faceless Sat-Set Pakai Avatar</div>
-      </div>
-    </a>
-  </div>
-
-  <!-- Card 4 -->
-  <div style="flex:0 0 250px" class="tiktok-card">
-    <a href="https://vt.tiktok.com/ZSpj7XmBN/" target="_blank" rel="noopener noreferrer" style="display:block;position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:3px solid #2B2547;box-shadow:5px 5px 0 #F5917B;background:#1E1B2E">
-      <img src="assets/tiktok-4.jpg" alt="Video TikTok 4" style="width:100%;height:100%;object-fit:cover;display:block">
-      <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%)"></div>
-      <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px">TikTok VT</span></div>
-      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
-        <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-      </div>
-      <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
-        <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Behind The Scene</div>
-        <div style="font-size:14px;font-weight:700;line-height:1.3">Dari Gambar Diam Jadi Karakter Hidup</div>
-      </div>
-    </a>
-  </div>
-
-  <!-- Card 5 -->
-  <div style="flex:0 0 250px" class="tiktok-card">
-    <a href="https://vt.tiktok.com/ZSpj7kCmB/" target="_blank" rel="noopener noreferrer" style="display:block;position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:3px solid #2B2547;box-shadow:5px 5px 0 #F5917B;background:#1E1B2E">
-      <img src="assets/tiktok-5.jpg" alt="Video TikTok 5" style="width:100%;height:100%;object-fit:cover;display:block">
-      <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%)"></div>
-      <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px">TikTok VT</span></div>
-      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
-        <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-      </div>
-      <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
-        <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Voice Over</div>
-        <div style="font-size:14px;font-weight:700;line-height:1.3">Ekspresi Reaktif Mengikuti Suara</div>
-      </div>
-    </a>
-  </div>
-
-</div>
-
-<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;opacity:0.8;border-top:1px solid rgba(43,37,71,0.15);padding-top:12px">
-  <span>Geser ke samping untuk melihat seluruh video</span>
-  <a href="https://www.tiktok.com/@ukiran_anin" target="_blank" rel="noopener noreferrer" style="font-weight:700;text-decoration:underline">Buka Profil TikTok @ukiran_anin →</a>
-</div>
-
-</div>
 </div>
 
 
@@ -440,7 +511,6 @@ renderVals() { return {}; }
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Reveal animation
   if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const els = document.querySelectorAll('.reveal');
     if ('IntersectionObserver' in window) {
@@ -450,6 +520,9 @@ document.addEventListener('DOMContentLoaded', function() {
             en.target.style.transitionDelay = (en.target.getAttribute('data-delay') || 0) + 'ms';
             en.target.classList.add('rv-in');
             io.unobserve(en.target);
+          } else if (en.boundingClientRect.bottom < 0) {
+            en.target.classList.add('rv-in', 'rv-now');
+            io.unobserve(en.target);
           }
         });
       }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
@@ -457,7 +530,52 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // Talking idle pulse
+  const p = document.getElementById('polaroidBox');
+  if (p) {
+    setInterval(() => {
+      if (!p.matches(':hover') && !p.classList.contains('is-talking')) {
+        p.classList.add('is-talking');
+        setTimeout(() => { p.classList.remove('is-talking'); }, 800);
+      }
+    }, 4500);
+  }
+});
+
+function triggerTalking() {
+  const p = document.getElementById('polaroidBox');
+  if (p) p.classList.toggle('is-talking');
+}
+
+function scrollTikTok(direction) {
+  const container = document.getElementById('tiktokCarousel');
+  if (container) {
+    container.scrollBy({ left: 270 * direction, behavior: 'smooth' });
+  }
+}
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const els = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting) {
+            en.target.style.transitionDelay = (en.target.getAttribute('data-delay') || 0) + 'ms';
+            en.target.classList.add('rv-in');
+            io.unobserve(en.target);
+          } else if (en.boundingClientRect.bottom < 0) {
+            en.target.classList.add('rv-in', 'rv-now');
+            io.unobserve(en.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+      els.forEach((e) => { e.classList.add('rv-hide'); io.observe(e); });
+    }
+  }
+
   const p = document.getElementById('polaroidBox');
   if (p) {
     setInterval(() => {
