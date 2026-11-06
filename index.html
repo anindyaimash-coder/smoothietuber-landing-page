@@ -1,658 +1,486 @@
-<!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<!doctype html>
+<html lang="id">
 <head>
-  <meta charset="utf-8">
-  <title>SmoothieTuber — Avatar Gambarmu, Hidup Saat Kamu Bicara 🎨</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="SmoothieTuber mengubah gambarmu jadi avatar 2D yang bergerak smooth mengikuti suara, langsung dari browser tanpa install software berat.">
-  
-  <link rel="icon" href="assets/smoothietuber-cup-logo.png">
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <style>
-    @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=Fraunces:ital,opsz,wght@0,9..144,400..800;1,9..144,400..800&family=Patrick+Hand+SC&display=swap");
-    
-    body {
-      font-family: "DM Sans", sans-serif;
-      background-color: #FAF6EE;
-      color: #2B2547;
-      margin: 0;
-      padding: 0;
-    }
-    .font-fraunces {
-      font-family: "Fraunces", serif;
-    }
-    .font-hand {
-      font-family: "Patrick Hand SC", cursive, sans-serif;
-    }
+<meta charset="utf-8">
+<title>SmoothieTuber</title>
 
-    /* POLAROID AVATAR ANIMATION (MATCHING PORTFOLIO WEB) */
-    .polaroid-frame {
-      position: relative;
-      background: #FFFFFF;
-      border: 3px solid #2B2547;
-      border-radius: 8px;
-      box-shadow: 8px 8px 0px #F5917B;
-      padding: 14px 14px 44px;
-      transform: rotate(-2.5deg);
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
-      cursor: pointer;
-    }
-    .polaroid-frame:hover {
-      transform: rotate(0deg) scale(1.03) translateY(-4px);
-      box-shadow: 12px 12px 0px #F27F67;
-    }
-    .polaroid-window {
-      aspect-ratio: 1 / 1;
-      background: linear-gradient(150deg, #A9BDF0 0%, #DCE6FB 100%);
-      border: 2px solid #2B2547;
-      border-radius: 4px;
-      position: relative;
-      overflow: visible;
-    }
-    
-    @keyframes avatarFloat {
-      0%, 100% {
-        transform: translateX(-50%) translateY(0px);
-      }
-      50% {
-        transform: translateX(-50%) translateY(-6px);
-      }
-    }
-    @keyframes avatarGiggle {
-      0%, 100% { transform: translateX(-50%) translateY(-4px) rotate(0deg); }
-      25% { transform: translateX(-50%) translateY(-8px) rotate(-2deg); }
-      75% { transform: translateX(-50%) translateY(-7px) rotate(2deg); }
-    }
-
-    .avatar-pop-closed, .avatar-pop-open {
-      position: absolute;
-      left: 50%;
-      bottom: -6px;
-      width: 114%;
-      max-width: none;
-      transform: translateX(-50%);
-      transform-origin: 50% 100%;
-      transition: opacity 0.2s ease, transform 0.25s ease;
-      pointer-events: none;
-    }
-    .avatar-pop-closed {
-      opacity: 1;
-      animation: avatarFloat 3.8s ease-in-out infinite;
-    }
-    .avatar-pop-open {
-      opacity: 0;
-    }
-
-    .polaroid-frame:hover .avatar-pop-closed {
-      opacity: 0;
-    }
-    .polaroid-frame:hover .avatar-pop-open {
-      opacity: 1;
-      animation: avatarGiggle 0.6s ease-in-out infinite;
-    }
-
-    .polaroid-frame.is-talking .avatar-pop-closed {
-      opacity: 0;
-    }
-    .polaroid-frame.is-talking .avatar-pop-open {
-      opacity: 1;
-      animation: avatarGiggle 0.4s ease-in-out infinite;
-    }
-
-    .hide-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .hide-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-  </style>
 </head>
-<body class="antialiased min-h-screen flex flex-col">
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&amp;family=DM+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FBF6EC}
+a{color:inherit;text-decoration:none}
+.btn{display:inline-block;padding:16px 32px;border-radius:999px;background:#F5917B;color:#2B2547;font-weight:700;min-height:20px}
+.btn:hover{background:#F27F67}
+.rv-hide{opacity:0;transform:translateY(32px)}
+.rv-hide.rv-in{opacity:1;transform:none;transition:opacity .9s ease,transform .9s ease}
+.rv-hide.rv-now{transition:none}
+@media (prefers-reduced-motion:reduce){.rv-hide{opacity:1;transform:none}}
+.card{background:#fff;border-radius:36px;padding:48px 40px;display:flex;flex-direction:column;gap:20px}
 
-  <!-- STICKY NAVBAR -->
-  <header class="sticky top-0 z-40 bg-[#A9BDF0] px-6 py-4 shadow-sm border-b border-[#2B2547]/10 transition">
-    <div class="max-w-6xl mx-auto flex justify-between items-center flex-wrap gap-4">
-      <a href="#" class="flex items-center gap-3">
-        <img src="assets/smoothietuber-cup-logo.png" alt="Logo SmoothieTuber" class="h-10 sm:h-12 w-auto">
-        <img src="assets/smoothietuber-wordmark.svg" alt="SmoothieTuber" class="h-6 sm:h-8 w-auto">
-      </a>
-      <nav class="flex gap-6 sm:gap-8 items-center font-bold text-sm text-[#2B2547]">
-        <a href="#fitur" class="hover:text-white transition">Fitur</a>
-        <a href="#tampilan" class="hover:text-white transition">Tampilan</a>
-        <a href="#cara" class="hover:text-white transition">Cara Kerja</a>
-        <a href="#creator" class="hover:text-white transition">About</a>
-        <a href="https://lynk.id/ukiran_anin" target="_blank" rel="noopener noreferrer" class="hidden sm:inline-block bg-[#F5917B] hover:bg-[#F27F67] text-[#2B2547] text-xs font-bold px-5 py-2.5 rounded-full shadow transition">
-          Coba Sekarang
-        </a>
-      </nav>
+.polaroid-frame {
+  position: relative;
+  background: #FFFFFF;
+  border: 3px solid #2B2547;
+  border-radius: 8px;
+  box-shadow: 8px 8px 0px #F5917B;
+  padding: 14px 14px 40px;
+  transform: rotate(-2.5deg);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+  cursor: pointer;
+  width: 100%;
+  max-width: 320px;
+}
+.polaroid-frame:hover {
+  transform: rotate(0deg) scale(1.03) translateY(-4px);
+  box-shadow: 12px 12px 0px #F27F67;
+}
+.polaroid-window {
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(150deg, #A9BDF0 0%, #DCE6FB 100%);
+  border: 2px solid #2B2547;
+  border-radius: 4px;
+  position: relative;
+  overflow: visible;
+}
+@keyframes avatarFloat {
+  0%, 100% { transform: translateX(-50%) translateY(0px); }
+  50% { transform: translateX(-50%) translateY(-6px); }
+}
+@keyframes avatarGiggle {
+  0%, 100% { transform: translateX(-50%) translateY(-4px) rotate(0deg); }
+  25% { transform: translateX(-50%) translateY(-8px) rotate(-2deg); }
+  75% { transform: translateX(-50%) translateY(-7px) rotate(2deg); }
+}
+.avatar-pop-closed, .avatar-pop-open {
+  position: absolute;
+  left: 50%;
+  bottom: -6px;
+  width: 114%;
+  max-width: none;
+  transform: translateX(-50%);
+  transform-origin: 50% 100%;
+  transition: opacity 0.2s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+.avatar-pop-closed {
+  opacity: 1;
+  animation: avatarFloat 3.8s ease-in-out infinite;
+}
+.avatar-pop-open {
+  opacity: 0;
+}
+.polaroid-frame:hover .avatar-pop-closed {
+  opacity: 0;
+}
+.polaroid-frame:hover .avatar-pop-open {
+  opacity: 1;
+  animation: avatarGiggle 0.6s ease-in-out infinite;
+}
+.polaroid-frame.is-talking .avatar-pop-closed {
+  opacity: 0;
+}
+.polaroid-frame.is-talking .avatar-pop-open {
+  opacity: 1;
+  animation: avatarGiggle 0.4s ease-in-out infinite;
+}
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.tiktok-card { transition: transform 0.25s ease; }
+.tiktok-card:hover { transform: translateY(-4px); }
+
+</style>
+</helmet>
+<div style="font-family:'DM Sans',sans-serif;color:#2B2547;line-height:1.7;font-size:18px">
+
+<div style="background:#A9BDF0;padding:20px 48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px">
+<a href="#" style="display:flex;align-items:center;gap:12px;font-family:'Fraunces',serif;font-weight:700;font-size:22px"><img src="assets/logo.png" alt="Logo SmoothieTuber" style="height:48px;width:auto;display:block"><img src="assets/wm.svg" alt="SmoothieTuber" style="height:34px;width:auto;display:block"></a>
+<div style="display:flex;gap:40px;align-items:center;flex-wrap:wrap;font-weight:500;font-size:16px">
+<a href="#fitur">Fitur</a><a href="#layar">Tampilan</a><a href="#cara">Cara kerja</a>
+</div>
+</div>
+
+<div style="max-width:1160px;margin:0 auto;padding:140px 48px 160px;display:flex;flex-wrap:wrap;gap:96px;align-items:center;justify-content:center">
+<div class="reveal" style="flex:1 1 400px;display:flex;flex-direction:column;gap:36px">
+<span style="align-self: flex-start; padding: 8px 20px; border-radius: 999px; font-weight: 700; font-size: 14px; letter-spacing: .06em; background-color: #def7a0">PNGTUBER 2D</span>
+<h1 style="margin:0;font-family:'Fraunces',serif;font-weight:700;font-size:64px;line-height:1.25">Avatar gambarmu, <span style="background:linear-gradient(transparent 58%,#D8E55B 58%,#D8E55B 92%,transparent 92%);padding:0 8px">hidup</span> saat kamu bicara.</h1>
+<p style="margin:0;max-width:520px">Ingin tampil di live tanpa menunjukkan wajah, tapi malas berurusan dengan software animasi yang ribet? SmoothieTuber mengubah gambarmu jadi avatar 2D yang bergerak smooth mengikuti suara, langsung dari browser.</p>
+<div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center">
+<a class="btn" href="https://lynk.id/ukiran_anin">Coba Sekarang juga!</a>
+<a href="#cara" style="font-weight:700;border-bottom:2px solid #A9BDF0">Lihat cara kerjanya</a>
+</div>
+</div>
+
+<div class="reveal" data-delay="200" style="flex:1 1 400px;max-width:560px;position:relative;padding:0 0 64px 0">
+<div style="background:#F7A9BA;border-radius:48px;padding:48px 48px 96px">
+<div style="border:10px solid #2B2547;border-radius:16px;overflow:hidden;background:#FBF6EC"><img src="assets/mon.png" alt="Tampilan SmoothieTuber di layar monitor" style="display:block;width:100%;height:auto"></div>
+<div style="width:64px;height:20px;background:#2B2547;margin:0 auto"></div>
+<div style="width:140px;height:8px;background:#2B2547;margin:0 auto;border-radius:999px"></div>
+</div>
+<div style="position:absolute;right:-8px;bottom:0;width:30%;min-width:120px"><div style="position:relative;background:#1E1B2E;padding:6px;border-radius:30px;box-shadow:0 12px 28px rgba(43,37,71,.25)"><div style="position:absolute;left:-3px;top:20%;width:3px;height:7%;background:#1E1B2E;border-radius:2px"></div><div style="position:absolute;left:-3px;top:29%;width:3px;height:7%;background:#1E1B2E;border-radius:2px"></div><div style="position:absolute;right:-3px;top:24%;width:3px;height:11%;background:#1E1B2E;border-radius:2px"></div><div style="position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;background:#FAF8F5"><img src="assets/ph916.png" alt="Tampilan SmoothieTuber di layar HP" style="display:block;width:100%;height:100%;object-fit:cover"><div style="position:absolute;top:8px;left:50%;transform:translateX(-50%);width:28%;height:10px;border-radius:999px;background:#1E1B2E"></div></div></div></div>
+</div>
+</div>
+
+<div style="max-width:1160px;margin:0 auto;padding:0 48px 160px;display:flex;flex-wrap:wrap;gap:72px;align-items:flex-start" id="tentang">
+<div class="reveal" style="flex:1 1 380px;display:flex;flex-direction:column;gap:20px">
+<span style="align-self:flex-start;background:#A9BDF0;padding:6px 20px;border-radius:999px;font-weight:700;font-size:14px">Apa itu SmoothieTuber?</span>
+<h2 style="margin:0;font-family:'Fraunces',serif;font-size:48px;line-height:1.2;font-weight:700">PNGTuber 2D yang jalan langsung di browser.</h2>
+</div>
+<div class="reveal" data-delay="150" style="flex:1 1 380px;display:flex;flex-direction:column;gap:32px">
+<p style="margin:0">SmoothieTuber adalah web app untuk membuat avatar 2D yang bereaksi pada suara. Kamu cukup membawa gambar karaktermu. Saat kamu bicara, mulutnya ikut bergerak, dan kamu bisa berganti ekspresi kapan saja.</p>
+<p style="margin:0">Tidak perlu memasang aplikasi atau punya skill animasi. Buka di browser, atur suaramu, lalu rekam videonya.</p>
+<div style="display:flex;gap:12px;flex-wrap:wrap">
+<span style="background:#F7A9BA;padding:8px 20px;border-radius:999px;font-weight:700;font-size:15px">Tanpa instal</span>
+<span style="background:#D8E55B;padding:8px 20px;border-radius:999px;font-weight:700;font-size:15px">Gambar buatanmu sendiri</span>
+<span style="background:#A9BDF0;padding:8px 20px;border-radius:999px;font-weight:700;font-size:15px">Cocok untuk kreator faceless</span>
+</div>
+</div>
+</div>
+
+<div style="padding:140px 48px;background-color:#DEF7A0" id="fitur">
+<div style="max-width:1160px;margin:0 auto;display:flex;flex-direction:column;gap:72px">
+<div class="reveal" style="display:flex;flex-direction:column;gap:20px;max-width:640px">
+<span style="align-self:flex-start;background:#F7A9BA;padding:6px 20px;border-radius:999px;font-weight:700;font-size:14px">Fitur</span>
+<h2 style="margin:0;font-family:'Fraunces',serif;font-size:48px;line-height:1.15;font-weight:700">Semua yang kamu perlu, tanpa menu yang ribet.</h2>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:40px">
+<div class="card reveal" data-delay="0"><div style="width:56px;height:56px;border-radius:20px;background:#F7A9BA;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Ikon mikrofon"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5.5 11a6.5 6.5 0 0 0 13 0"></path><path d="M12 17.5V21"></path><path d="M9 21h6"></path></svg></div><h3 style="margin:0;font-family:'Fraunces',serif;font-size:26px">Reaktif suara</h3><p style="margin:0">Mulut avatar terbuka dan tertutup mengikuti volume mikrofonmu. Atur penguat, ambang batas, dan waktu tahan sampai pas.</p></div>
+<div class="card reveal" data-delay="150"><div style="width:56px;height:56px;border-radius:20px;background:#A9BDF0;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Ikon wajah"><circle cx="12" cy="12" r="9"></circle><path d="M9 9.8v.8"></path><path d="M15 9.8v.8"></path><path d="M8.5 14.2c1 1.7 2.1 2.4 3.5 2.4s2.5-.7 3.5-2.4"></path></svg></div><h3 style="margin:0;font-family:'Fraunces',serif;font-size:26px">Banyak emosi</h3><p style="margin:0">Buat ekspresi sebanyak yang kamu mau, lalu ganti seketika dengan tombol pintas. Mata berkedip otomatis supaya terasa hidup.</p></div>
+<div class="card reveal" data-delay="300"><div style="width:56px;height:56px;border-radius:20px;background:#F5917B;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Ikon monitor dan HP"><rect x="2" y="5" width="14" height="10" rx="1.8"></rect><path d="M9 15v4"></path><path d="M6 19h6"></path><rect x="17.5" y="9" width="4.5" height="10" rx="1.5"></rect><path d="M19 16.8h1.5"></path></svg></div><h3 style="margin:0;font-family:'Fraunces',serif;font-size:26px">Ekspor video</h3><p style="margin:0">Rekam ke MP4, MOV, atau WebM transparan. Pilih rasio 9:16, 1:1, atau 16:9, dengan latar transparan atau green screen.</p></div>
+</div>
+</div>
+</div>
+
+<div style="max-width:1160px;margin:0 auto;padding:160px 48px 0" id="unggulan">
+<div class="reveal" style="background:#F7A9BA;border-radius:56px;padding:80px 56px;display:flex;flex-wrap:wrap;gap:56px;align-items:center">
+<div style="flex:1 1 340px;display:flex;flex-direction:column;gap:20px">
+<span style="align-self:flex-start;background:#fff;padding:6px 20px;border-radius:999px;font-weight:700;font-size:14px">Fitur unggulan</span>
+<h2 style="margin:0;font-family:'Fraunces',serif;font-size:44px;line-height:1.2;font-weight:700">Rekam dengan caramu.</h2>
+<p style="margin:0">Pakai background dari galeri, rekam bersama kamera, atau import audio MP3 atau WAV. Kamu tinggal fokus memainkan ekspresi.</p>
+</div>
+<div style="flex:1 1 340px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px">
+<div style="background:#fff;border-radius:36px;padding:36px 32px;display:flex;flex-direction:column;gap:16px">
+<div style="width:56px;height:56px;border-radius:20px;background:#A9BDF0;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Ikon background"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg></div>
+<h3 style="margin:0;font-family:'Fraunces',serif;font-size:24px">Dengan background</h3>
+<p style="margin:0;font-size:16px">Unggah foto atau gambar dari galerimu, lalu pasang sebagai latar belakang avatarmu.</p>
+</div>
+<div style="background:#fff;border-radius:36px;padding:36px 32px;display:flex;flex-direction:column;gap:16px">
+<div style="width:56px;height:56px;border-radius:20px;background:#F5917B;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Ikon kamera"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13.5" r="3.5"/></svg></div>
+<h3 style="margin:0;font-family:'Fraunces',serif;font-size:24px">Dengan kamera</h3>
+<p style="margin:0;font-size:16px">Rekam avatarmu bersama tampilan kamera dalam satu video.</p>
+</div>
+<div style="grid-column:1/-1;background:#fff;border-radius:36px;padding:36px 32px;display:flex;flex-direction:column;gap:16px">
+<div style="width:56px;height:56px;border-radius:20px;background:#F7A9BA;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Ikon rekaman suara"><path d="M5 10v4"/><path d="M9 7v10"/><path d="M13 4v16"/><path d="M17 8v8"/><path d="M21 11v2"/></svg></div>
+<h3 style="margin:0;font-family:'Fraunces',serif;font-size:24px">Dengan audio MP3 atau WAV</h3>
+<p style="margin:0;font-size:16px">Import file MP3 atau WAV, lalu fokus main ekspresi dengan hotkeys saat suara diputar dan direkam.</p>
+</div>
+</div>
+</div>
+</div>
+
+<div style="max-width:1160px;margin:0 auto;padding:160px 48px 0;display:flex;flex-direction:column;gap:80px" id="layar">
+<div class="reveal" style="display:flex;flex-direction:column;gap:20px;max-width:640px">
+<span style="align-self: flex-start; padding: 6px 20px; border-radius: 999px; font-weight: 700; font-size: 14px; background-color: #def7a0">Satu avatar, semua layar</span>
+<h2 style="margin:0;font-family:'Fraunces',serif;font-size:48px;line-height:1.15;font-weight:700">Tampil rapi di HP, monitor, dan feed.</h2>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:40px;align-items:stretch">
+<div class="reveal" data-delay="0" style="background:#F7A9BA;border-radius:44px;padding:56px 40px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:40px">
+<div style="position:relative;width:200px;background:#1E1B2E;padding:8px;border-radius:40px;box-shadow:0 16px 32px rgba(43,37,71,.25)"><div style="position:absolute;left:-3px;top:20%;width:3px;height:7%;background:#1E1B2E;border-radius:2px"></div><div style="position:absolute;left:-3px;top:29%;width:3px;height:7%;background:#1E1B2E;border-radius:2px"></div><div style="position:absolute;right:-3px;top:24%;width:3px;height:11%;background:#1E1B2E;border-radius:2px"></div><div style="position:relative;aspect-ratio:9/16;border-radius:32px;overflow:hidden;background:#FAF8F5"><img src="assets/ph916.png" alt="SmoothieTuber di layar HP" style="display:block;width:100%;height:100%;object-fit:cover"><div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:28%;height:14px;border-radius:999px;background:#1E1B2E"></div></div></div>
+<div style="text-align:center"><h3 style="margin:0;font-family:'Fraunces',serif;font-size:24px">HP, 9:16</h3><p style="margin:8px 0 0;font-size:16px">Untuk TikTok, Reels, dan Shorts.</p></div>
+</div>
+<div class="reveal" data-delay="150" style="background:#A9BDF0;border-radius:44px;padding:56px 40px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:40px">
+<div style="flex:1;width:100%;display:flex;align-items:center;justify-content:center"><div style="width:100%;max-width:360px"><div style="border:10px solid #2B2547;border-radius:16px;overflow:hidden;background:#FBF6EC"><img src="assets/mon.png" alt="SmoothieTuber di layar monitor" style="display:block;width:100%;height:auto"></div>
+<div style="width:64px;height:20px;background:#2B2547;margin:0 auto"></div><div style="width:140px;height:8px;background:#2B2547;margin:0 auto;border-radius:999px"></div></div></div>
+<div style="text-align:center"><h3 style="margin:0;font-family:'Fraunces',serif;font-size:24px">Monitor, 16:9</h3><p style="margin:8px 0 0;font-size:16px">Untuk YouTube dan OBS.</p></div>
+</div>
+<div class="reveal" data-delay="300" style="border-radius: 44px; padding: 56px 40px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 40px; background-color: #def7a0">
+<div style="position:relative;width:200px;background:#1E1B2E;padding:8px;border-radius:40px;box-shadow:0 16px 32px rgba(43,37,71,.25)"><div style="position:absolute;left:-3px;top:20%;width:3px;height:7%;background:#1E1B2E;border-radius:2px"></div><div style="position:absolute;left:-3px;top:29%;width:3px;height:7%;background:#1E1B2E;border-radius:2px"></div><div style="position:absolute;right:-3px;top:24%;width:3px;height:11%;background:#1E1B2E;border-radius:2px"></div><div role="img" aria-label="Ilustrasi tampilan feed media sosial di HP" style="position:relative;aspect-ratio:9/16;border-radius:32px;overflow:hidden;background:#fff;display:flex;flex-direction:column"><div style="height:34px;flex:none"></div><div style="display:flex;justify-content:space-between;align-items:center;padding:0 12px"><div style="width:70px;height:12px;border-radius:12px;background:#CFCBD8"></div><div style="display:flex;gap:10px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8D88A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8D88A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 4L3 11l7 3 3 7z"></path><path d="M10 14L21 4"></path></svg></div></div><div style="display:flex;gap:6px;padding:10px 12px"><div style="flex:none;width:30px;height:30px;box-sizing:border-box;border-radius:50%;padding:2px;border:2px solid #F7A9BA"><div style="width:100%;height:100%;border-radius:50%;background:#ECE9F3"></div></div><div style="flex:none;width:30px;height:30px;box-sizing:border-box;border-radius:50%;padding:2px;border:2px solid #DAD6E4"><div style="width:100%;height:100%;border-radius:50%;background:#ECE9F3"></div></div><div style="flex:none;width:30px;height:30px;box-sizing:border-box;border-radius:50%;padding:2px;border:2px solid #DAD6E4"><div style="width:100%;height:100%;border-radius:50%;background:#ECE9F3"></div></div><div style="flex:none;width:30px;height:30px;box-sizing:border-box;border-radius:50%;padding:2px;border:2px solid #DAD6E4"><div style="width:100%;height:100%;border-radius:50%;background:#ECE9F3"></div></div><div style="flex:none;width:30px;height:30px;box-sizing:border-box;border-radius:50%;padding:2px;border:2px solid #DAD6E4"><div style="width:100%;height:100%;border-radius:50%;background:#ECE9F3"></div></div></div><div style="display:flex;justify-content:space-between;align-items:center;padding:2px 12px 6px"><div style="display:flex;align-items:center;gap:6px"><div style="flex:none;width:20px;height:20px;border-radius:50%;background:#D8D4E3"></div><div style="width:46px;height:8px;border-radius:8px;background:#CFCBD8"></div></div><div style="display:flex;gap:2px"><div style="width:3px;height:3px;border-radius:50%;background:#8D88A3"></div><div style="width:3px;height:3px;border-radius:50%;background:#8D88A3"></div><div style="width:3px;height:3px;border-radius:50%;background:#8D88A3"></div></div></div><img src="assets/sq.png" alt="Avatar SmoothieTuber dalam postingan feed" style="display:block;width:100%;aspect-ratio:1/1;object-fit:cover"><div style="display:flex;justify-content:space-between;padding:8px 12px 6px"><div style="display:flex;gap:10px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8D88A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8D88A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 1 1 3 6.2L4 20l1-3.6A8 8 0 0 1 4 12z"></path></svg><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8D88A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 4L3 11l7 3 3 7z"></path><path d="M10 14L21 4"></path></svg></div><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#8D88A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 4h12v16l-6-4-6 4z"></path></svg></div><div style="display:flex;flex-direction:column;gap:5px;padding:0 12px"><div style="width:80px;height:7px;border-radius:7px;background:#CFCBD8"></div><div style="width:140px;height:7px;border-radius:7px;background:#E4E1EC"></div></div><div style="margin-top:auto;border-top:1px solid #ECE9F3;display:flex;justify-content:space-between;padding:8px 14px 12px"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8D88A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7v9H4z"></path></svg><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8D88A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6"></circle><path d="M16 16l4 4"></path></svg><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8D88A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"></rect><path d="M12 8.5v7M8.5 12h7"></path></svg><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8D88A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"></rect><path d="M10 9l5 3-5 3z"></path></svg><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#8D88A3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8"></circle><circle cx="12" cy="10" r="2.5"></circle><path d="M7.5 17c1-2 2.5-3 4.5-3s3.5 1 4.500 3"></path></svg></div><div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:28%;height:14px;border-radius:999px;background:#1E1B2E"></div></div></div>
+<div style="text-align:center"><h3 style="margin:0;font-family:'Fraunces',serif;font-size:24px">Feed, 1:1</h3><p style="margin:8px 0 0;font-size:16px">Untuk postingan persegi di feed.</p></div>
+</div>
+</div>
+</div>
+
+<div style="max-width:1160px;margin:0 auto;padding:160px 48px;display:flex;flex-direction:column;gap:80px" id="cara">
+<div class="reveal" style="display:flex;flex-direction:column;gap:20px;max-width:640px">
+<span style="align-self:flex-start;background:#A9BDF0;padding:6px 20px;border-radius:999px;font-weight:700;font-size:14px">Cara kerja</span>
+<h2 style="margin:0;font-family:'Fraunces',serif;font-size:48px;line-height:1.15;font-weight:700">Empat langkah, langsung jadi.</h2>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:40px">
+<div class="reveal" data-delay="0" style="display:flex;flex-direction:column;gap:16px"><span style="width:56px;height:56px;border-radius:50%;background:#F7A9BA;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:700;font-size:24px">1</span><h3 style="margin:0;font-family:'Fraunces',serif;font-size:24px">Masukkan kode akses</h3><p style="margin:0">Setelah pembayaran, masukkan kode aksesmu di aplikasi.</p></div>
+<div class="reveal" data-delay="150" style="display:flex;flex-direction:column;gap:16px"><span style="width:56px;height:56px;border-radius:50%;background:#F5917B;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:700;font-size:24px">2</span><h3 style="margin:0;font-family:'Fraunces',serif;font-size:24px">Unggah avatarmu</h3><p style="margin:0">Masukkan gambar avatar untuk mulut tertutup, terbuka, dan berkedip.</p></div>
+<div class="reveal" data-delay="300" style="display:flex;flex-direction:column;gap:16px"><span style="width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Fraunces',serif; font-weight: 700; font-size: 24px; background-color: #def7a0">3</span><h3 style="margin:0;font-family:'Fraunces',serif;font-size:24px">Kalibrasi suara</h3><p style="margin:0">Nyalakan mikrofon dan atur sensitivitas sampai avatar merespons natural.</p></div>
+<div class="reveal" data-delay="450" style="display:flex;flex-direction:column;gap:16px"><span style="width:56px;height:56px;border-radius:50%;background:#A9BDF0;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:700;font-size:24px">4</span><h3 style="margin:0;font-family:'Fraunces',serif;font-size:24px">Siaran langsung atau rekam</h3><p style="margin:0">Tampilkan avatarmu langsung di livestream lewat OBS, atau rekam jadi video untuk TikTok, Reels, dan Shorts.</p></div>
+</div>
+</div>
+
+<div style="max-width:1160px;margin:0 auto;padding:0 48px 160px;display:flex;flex-direction:column;gap:80px" id="illustrator">
+<div class="reveal" style="display:flex;flex-direction:column;gap:20px;max-width:680px">
+<span style="align-self:flex-start;background:#F7A9BA;padding:6px 20px;border-radius:999px;font-weight:700;font-size:14px">Desain avatar</span>
+<h2 style="margin:0;font-family:'Fraunces',serif;font-size:48px;line-height:1.15;font-weight:700">Bingung belum punya desain avatar?</h2>
+<p style="margin:0">Komisi avatar ke salah satu illustrator di bawah ini, lalu hidupkan langsung di SmoothieTuber.</p>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:40px">
+<div class="reveal" data-delay="0" style="display:flex;flex-direction:column;gap:24px">
+<div style="aspect-ratio:1/1;background:#F7A9BA;border-radius:44px;display:flex;align-items:center;justify-content:center;text-align:center;padding:32px;font-size:16px">[Avatar PNGTuber 1]</div>
+<div><h3 style="margin:0;font-family:'Fraunces',serif;font-size:26px">[Nama illustrator 1]</h3><p style="margin:4px 0 0;font-size:16px">Illustrator avatar</p></div>
+</div>
+<div class="reveal" data-delay="150" style="display:flex;flex-direction:column;gap:24px">
+<div style="aspect-ratio:1/1;background:#A9BDF0;border-radius:44px;display:flex;align-items:center;justify-content:center;text-align:center;padding:32px;font-size:16px">[Avatar PNGTuber 2]</div>
+<div><h3 style="margin:0;font-family:'Fraunces',serif;font-size:26px">[Nama illustrator 2]</h3><p style="margin:4px 0 0;font-size:16px">Illustrator avatar</p></div>
+</div>
+<div class="reveal" data-delay="300" style="display:flex;flex-direction:column;gap:24px">
+<div style="aspect-ratio: 1/1; border-radius: 44px; display: flex; align-items: center; justify-content: center; text-align: center; padding: 32px; font-size: 16px; background-color: #def7a0">[Avatar PNGTuber 3]</div>
+<div><h3 style="margin:0;font-family:'Fraunces',serif;font-size:26px">[Nama illustrator 3]</h3><p style="margin:4px 0 0;font-size:16px">Illustrator avatar</p></div>
+</div>
+</div>
+</div>
+
+
+<div style="max-width:1160px;margin:0 auto;padding:0 48px 100px" id="creator">
+<div class="reveal" style="background:#A9BDF0;border-radius:48px;padding:64px 48px;display:flex;flex-wrap:wrap;gap:56px;align-items:center;justify-content:space-between">
+
+<!-- Text Column (Matthew Kimberley inspired side-by-side) -->
+<div style="flex:1 1 440px;display:flex;flex-direction:column;gap:20px;max-width:600px">
+<span style="align-self:flex-start;background:#F7A9BA;padding:6px 20px;border-radius:999px;font-weight:700;font-size:14px">About the creator</span>
+<h2 style="margin:0;font-family:'Fraunces',serif;font-size:44px;line-height:1.15;font-weight:700">Halo, saya Anin (Ukiran Anin)!</h2>
+<div style="font-weight:700;font-size:16px;color:#2B2547;background:#FAF6EE;padding:6px 16px;border-radius:12px;align-self:flex-start">Children's Book Illustrator &amp; Voice Over Creator</div>
+<p style="margin:0">Saya suka bikin konten bercerita, tapi alergi banget tampil di depan kamera. Dulu saya capek sama aplikasi avatar yang berat, sering gagal instal, dan bikin laptop panas kayak kompor.</p>
+<p style="margin:0">SmoothieTuber lahir dari keresahan saya sendiri: pengen punya karakter yang geraknya lembut, estetik, dan hidup ngikutin suara. Cukup buka browser di PC atau HP, tanpa instal apa pun.</p>
+<p style="margin:0">Awalnya cuma buat saya pakai sendiri. Sekarang saya bagi buat kamu, sesama ilustrator dan kreator yang pengen karyanya lebih bernyawa.</p>
+</div>
+
+<!-- Animated Polaroid Column (Portfolio Style) -->
+<div style="flex:1 1 320px;max-width:380px;display:flex;justify-content:center;margin:0 auto">
+  <div id="polaroidBox" class="polaroid-frame" onclick="triggerTalking()">
+    <div class="polaroid-window">
+      <img src="assets/anin-closed.png" alt="Avatar Anin Menggambar" class="avatar-pop-closed">
+      <img src="assets/anin-open.png" alt="Avatar Anin Berbicara" class="avatar-pop-open">
     </div>
-  </header>
-
-  <main class="flex-1 max-w-6xl mx-auto p-4 sm:p-6 md:p-8 space-y-16 sm:space-y-24 my-6">
-
-    <!-- HERO SECTION -->
-    <section class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center pt-4 sm:pt-8">
-      <div class="lg:col-span-7 space-y-6">
-        <span class="inline-block px-4 py-1.5 rounded-full font-extrabold text-xs tracking-wider bg-[#DEF7A0] text-[#2B2547] border border-[#2B2547]/15">
-          PNGTUBER 2D WEB APP
-        </span>
-        <h1 class="font-fraunces text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.2] text-[#2B2547]">
-          Avatar gambarmu, <span class="bg-[#D8E55B] px-2.5 py-0.5 rounded-lg shadow-sm">hidup</span> saat kamu bicara.
-        </h1>
-        <p class="text-[#2B2547]/80 text-base sm:text-lg leading-relaxed max-w-xl">
-          Ingin tampil di live atau bikin konten tanpa menunjukkan wajah, tapi malas berurusan dengan software animasi yang ribet? SmoothieTuber mengubah gambarmu jadi avatar 2D yang bergerak smooth mengikuti suara, langsung dari browser.
-        </p>
-        <div class="flex flex-wrap gap-4 items-center pt-2">
-          <a href="https://lynk.id/ukiran_anin" target="_blank" rel="noopener noreferrer" class="bg-[#F5917B] hover:bg-[#F27F67] text-[#2B2547] font-extrabold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition text-base">
-            Coba Sekarang juga!
-          </a>
-          <a href="#cara" class="font-bold border-b-2 border-[#A9BDF0] hover:border-[#F5917B] text-[#2B2547] py-1 transition text-sm sm:text-base">
-            Lihat cara kerjanya →
-          </a>
-        </div>
-      </div>
-
-      <div class="lg:col-span-5 relative bg-[#F7A9BA] rounded-[48px] p-6 sm:p-8 flex items-center justify-center shadow-md border-3 border-[#2B2547]">
-        <div class="w-full bg-[#FAF6EE] border-8 border-[#2B2547] rounded-2xl overflow-hidden shadow-2xl">
-          <img src="assets/mockup-monitor.png" alt="Monitor Preview SmoothieTuber" class="w-full h-auto block">
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION: APA ITU SMOOTHIETUBER -->
-    <section class="bg-white p-8 sm:p-12 rounded-[36px] shadow-sm border-2 border-[#2B2547]/10 space-y-6">
-      <div class="max-w-2xl">
-        <span class="inline-block px-4 py-1.5 rounded-full font-bold text-xs bg-[#DEF7A0] text-[#2B2547] mb-3">
-          Apa itu SmoothieTuber?
-        </span>
-        <h2 class="font-fraunces text-3xl sm:text-4xl font-bold mb-3">PNGTuber 2D yang jalan langsung di browser.</h2>
-        <p class="text-stone-600 text-sm sm:text-base leading-relaxed">
-          SmoothieTuber adalah web app untuk membuat avatar 2D yang bereaksi pada suara. Cukup bawa gambarmu sendiri, atur mikrofon di browser, dan avatarmu langsung bergerak alami tanpa install aplikasi apapun.
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-2">
-        <div class="bg-[#FAF6EE] p-5 rounded-2xl border-2 border-[#2B2547]/15 text-center font-bold text-[#2B2547] shadow-sm hover:shadow transition">
-          <span class="text-2xl block mb-2">⚡</span> Tanpa Instal Software
-        </div>
-        <div class="bg-[#FAF6EE] p-5 rounded-2xl border-2 border-[#2B2547]/15 text-center font-bold text-[#2B2547] shadow-sm hover:shadow transition">
-          <span class="text-2xl block mb-2">🎨</span> Gambar Buatanmu Sendiri
-        </div>
-        <div class="bg-[#FAF6EE] p-5 rounded-2xl border-2 border-[#2B2547]/15 text-center font-bold text-[#2B2547] shadow-sm hover:shadow transition">
-          <span class="text-2xl block mb-2">🎭</span> Pas Buat Kreator Faceless
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION: FITUR UTAMA -->
-    <section id="fitur" class="p-8 sm:p-12 bg-[#FAF6EE] rounded-[40px] border-2 border-[#2B2547] shadow-sm space-y-8">
-      <div>
-        <span class="inline-block px-4 py-1.5 rounded-full font-bold text-xs bg-[#A9BDF0] text-[#2B2547] mb-3">
-          Fitur Utama
-        </span>
-        <h2 class="font-fraunces text-3xl sm:text-4xl font-bold">Semua yang kamu perlu, tanpa menu yang ribet.</h2>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border-2 border-[#2B2547]/10 flex flex-col gap-4 hover:-translate-y-1 transition duration-200">
-          <div class="w-12 h-12 rounded-2xl bg-[#DEF7A0] flex items-center justify-center font-bold text-2xl border border-[#2B2547]/20">🎙️</div>
-          <h3 class="font-fraunces text-2xl font-bold">Reaktif Suara</h3>
-          <p class="text-sm text-stone-600 leading-relaxed">Mulut avatar membuka dan menutup mengikuti volume mikrofonmu. Dilengkapi pengaturan sensitivitas & ambang batas.</p>
-        </div>
-        <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border-2 border-[#2B2547]/10 flex flex-col gap-4 hover:-translate-y-1 transition duration-200">
-          <div class="w-12 h-12 rounded-2xl bg-[#F7A9BA] flex items-center justify-center font-bold text-2xl border border-[#2B2547]/20">✨</div>
-          <h3 class="font-fraunces text-2xl font-bold">Banyak Emosi</h3>
-          <p class="text-sm text-stone-600 leading-relaxed">Buat ekspresi sebanyak yang kamu mau: Senang, Kaget, dsb. Ganti seketika via tombol pintas (hotkeys) dengan mata berkedip alami.</p>
-        </div>
-        <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-sm border-2 border-[#2B2547]/10 flex flex-col gap-4 hover:-translate-y-1 transition duration-200">
-          <div class="w-12 h-12 rounded-2xl bg-[#A9BDF0] flex items-center justify-center font-bold text-2xl border border-[#2B2547]/20">📹</div>
-          <h3 class="font-fraunces text-2xl font-bold">Ekspor Video</h3>
-          <p class="text-sm text-stone-600 leading-relaxed">Rekam ke MP4, MOV, atau WebM transparan. Pilihan rasio 9:16, 1:1, atau 16:9 siap unggah langsung ke media sosial.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION: TAMPILAN / MOCKUP SEMUA LAYAR -->
-    <section id="tampilan" class="bg-white p-8 sm:p-12 rounded-[36px] shadow-sm border-2 border-[#2B2547]/10 space-y-8">
-      <div>
-        <span class="inline-block px-4 py-1.5 rounded-full font-bold text-xs bg-[#DEF7A0] text-[#2B2547] mb-3">
-          Satu avatar, semua layar
-        </span>
-        <h2 class="font-fraunces text-3xl sm:text-4xl font-bold">Tampil rapi di HP, monitor, dan feed.</h2>
-      </div>
-      
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-[#FAF6EE] p-6 rounded-3xl border-2 border-[#2B2547]/15 text-center flex flex-col justify-between">
-          <div>
-            <img src="assets/mockup-mobile-9-16.png" alt="Mockup HP 9:16" class="w-full max-w-[210px] mx-auto rounded-2xl shadow mb-4">
-            <h3 class="font-fraunces font-bold text-xl">HP, 9:16</h3>
-            <p class="text-xs text-stone-600 mt-1">TikTok, Instagram Reels, dan YouTube Shorts.</p>
-          </div>
-        </div>
-        <div class="bg-[#FAF6EE] p-6 rounded-3xl border-2 border-[#2B2547]/15 text-center flex flex-col justify-between">
-          <div>
-            <img src="assets/mockup-monitor.png" alt="Mockup Monitor 16:9" class="w-full rounded-2xl shadow mb-4">
-            <h3 class="font-fraunces font-bold text-xl">Monitor, 16:9</h3>
-            <p class="text-xs text-stone-600 mt-1">YouTube Video & OBS Studio Livestreaming.</p>
-          </div>
-        </div>
-        <div class="bg-[#FAF6EE] p-6 rounded-3xl border-2 border-[#2B2547]/15 text-center flex flex-col justify-between">
-          <div>
-            <img src="assets/mockup-feed-1-1.png" alt="Mockup Feed 1:1" class="w-full max-w-[210px] mx-auto rounded-2xl shadow mb-4">
-            <h3 class="font-fraunces font-bold text-xl">Feed, 1:1</h3>
-            <p class="text-xs text-stone-600 mt-1">Postingan persegi feed Instagram & LinkedIn.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION: CARA KERJA (4 LANGKAH) -->
-    <section id="cara" class="p-8 sm:p-12 bg-[#FAF6EE] rounded-[40px] border-2 border-[#2B2547] shadow-sm space-y-8">
-      <div>
-        <span class="inline-block px-4 py-1.5 rounded-full font-bold text-xs bg-[#A9BDF0] text-[#2B2547] mb-3">
-          Cara Kerja
-        </span>
-        <h2 class="font-fraunces text-3xl sm:text-4xl font-bold">Empat langkah, langsung jadi.</h2>
-      </div>
-      
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="bg-white p-6 rounded-3xl border-2 border-[#2B2547]/10 flex flex-col gap-3 shadow-sm">
-          <div class="w-12 h-12 rounded-full bg-[#F7A9BA] flex items-center justify-center font-fraunces font-extrabold text-xl border-2 border-[#2B2547]">1</div>
-          <h3 class="font-fraunces font-bold text-xl">Masukkan Kode</h3>
-          <p class="text-xs sm:text-sm text-stone-600">Setelah pembayaran, masukkan kode aksesmu di aplikasi.</p>
-        </div>
-        <div class="bg-white p-6 rounded-3xl border-2 border-[#2B2547]/10 flex flex-col gap-3 shadow-sm">
-          <div class="w-12 h-12 rounded-full bg-[#F5917B] flex items-center justify-center font-fraunces font-extrabold text-xl border-2 border-[#2B2547]">2</div>
-          <h3 class="font-fraunces font-bold text-xl">Unggah Avatar</h3>
-          <p class="text-xs sm:text-sm text-stone-600">Unggah gambar mulut terbuka, tertutup, dan berkedip.</p>
-        </div>
-        <div class="bg-white p-6 rounded-3xl border-2 border-[#2B2547]/10 flex flex-col gap-3 shadow-sm">
-          <div class="w-12 h-12 rounded-full bg-[#DEF7A0] flex items-center justify-center font-fraunces font-extrabold text-xl border-2 border-[#2B2547]">3</div>
-          <h3 class="font-fraunces font-bold text-xl">Kalibrasi Suara</h3>
-          <p class="text-xs sm:text-sm text-stone-600">Nyalakan mikrofon dan sesuaikan sensitivitas respon suara.</p>
-        </div>
-        <div class="bg-white p-6 rounded-3xl border-2 border-[#2B2547]/10 flex flex-col gap-3 shadow-sm">
-          <div class="w-12 h-12 rounded-full bg-[#A9BDF0] flex items-center justify-center font-fraunces font-extrabold text-xl border-2 border-[#2B2547]">4</div>
-          <h3 class="font-fraunces font-bold text-xl">Siaran / Rekam</h3>
-          <p class="text-xs sm:text-sm text-stone-600">Tampilkan di livestream OBS atau rekam video instan.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION: ABOUT CREATOR (SIDE-BY-SIDE + BLUE CARD + ANIMATED POLAROID) -->
-    <section id="creator" class="p-8 sm:p-12 md:p-16 bg-[#A9BDF0] rounded-[48px] shadow-md border-3 border-[#2B2547]">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-        
-        <!-- LEFT COLUMN: TEXT CONTENT -->
-        <div class="lg:col-span-7 space-y-5">
-          <div class="inline-flex items-center gap-2 bg-[#F7A9BA] text-[#2B2547] px-4 py-1.5 rounded-full font-extrabold text-xs shadow-sm border border-[#2B2547]/20">
-            <span>✦</span> About the creator
-          </div>
-          
-          <h2 class="font-fraunces text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#2B2547] leading-[1.2]">
-            Halo, saya Anin (Ukiran Anin)!
-          </h2>
-          
-          <div class="inline-block bg-[#FAF6EE] text-[#2B2547] font-bold text-sm px-4 py-2 rounded-xl border-2 border-[#2B2547]/20 shadow-sm">
-            Children's Book Illustrator &amp; Voice Over Creator
-          </div>
-
-          <div class="space-y-4 text-stone-800 text-sm sm:text-base leading-relaxed">
-            <p>
-              Saya suka bikin konten bercerita, tapi alergi banget tampil di depan kamera. Dulu saya capek sama aplikasi avatar yang berat, sering gagal instal, dan bikin laptop panas kayak kompor.
-            </p>
-            <p>
-              SmoothieTuber lahir dari keresahan saya sendiri: pengen punya karakter yang geraknya lembut, estetik, dan hidup ngikutin suara. Cukup buka browser di PC atau HP, tanpa instal apa pun.
-            </p>
-            <p class="font-semibold text-[#2B2547]">
-              Awalnya cuma buat saya pakai sendiri. Sekarang saya bagi buat kamu, sesama ilustrator dan kreator yang pengen karyanya lebih bernyawa.
-            </p>
-          </div>
-
-          <div class="pt-2 flex items-center gap-2 text-xs font-bold text-[#2B2547]">
-            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
-            <span class="opacity-80">Arahkan kursor atau klik avatar di samping untuk melihat ekspresinya berbicara!</span>
-          </div>
-        </div>
-
-        <!-- RIGHT COLUMN: ANIMATED POLAROID AVATAR -->
-        <div class="lg:col-span-5 flex justify-center">
-          <div class="w-full max-w-[320px] md:max-w-[340px]">
-            
-            <div id="polaroidBox" class="polaroid-frame" onclick="triggerTalking()">
-              <div class="polaroid-window">
-                <!-- CLOSED MOUTH (DEFAULT) -->
-                <img src="assets/anin-closed.png" alt="Avatar Anin Menggambar" class="avatar-pop-closed">
-                <!-- OPEN MOUTH (ACTIVE ON HOVER / TALK) -->
-                <img src="assets/anin-open.png" alt="Avatar Anin Berbicara" class="avatar-pop-open">
-              </div>
-              
-              <div class="mt-3 text-center">
-                <figcaption class="font-hand font-bold text-xl text-[#2B2547] tracking-wide">
-                  Anin, drawing as usual ✦
-                </figcaption>
-                <p class="text-[11px] text-[#2B2547]/70 font-semibold mt-0.5">
-                  (Sentuh / Hover untuk bicara 🎙️)
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- SECTION: DERETAN VIDEO TIKTOK -->
-    <section class="p-8 sm:p-12 bg-white rounded-[40px] shadow-sm border-2 border-[#2B2547]/10 space-y-6">
-      <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <div class="inline-flex items-center gap-1.5 bg-[#DEF7A0] text-[#2B2547] px-3.5 py-1 rounded-full font-bold text-xs mb-2 border border-[#2B2547]/15">
-            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-            <span>KONTEN NYATA DENGAN SMOOTHIETUBER</span>
-          </div>
-          <h2 class="font-fraunces text-2xl sm:text-3xl md:text-4xl font-bold text-[#2B2547]">
-            Lihat Aksinya Langsung di TikTok @ukiran_anin
-          </h2>
-          <p class="text-xs sm:text-sm text-stone-600 mt-1 max-w-xl">
-            Avatar 2D bergerak dan bereaksi langsung mengikuti suara rekaman. Klik salah satu video di bawah untuk menonton video aslinya di TikTok!
-          </p>
-        </div>
-
-        <!-- SLIDER CONTROLS -->
-        <div class="flex items-center gap-2 self-start md:self-auto">
-          <button onclick="scrollTikTok(-1)" aria-label="Geser Kiri" class="w-11 h-11 rounded-full bg-[#FAF6EE] hover:bg-[#F5917B] text-[#2B2547] font-bold border-2 border-[#2B2547] flex items-center justify-center transition shadow-sm hover:shadow">
-            ❮
-          </button>
-          <button onclick="scrollTikTok(1)" aria-label="Geser Kanan" class="w-11 h-11 rounded-full bg-[#FAF6EE] hover:bg-[#F5917B] text-[#2B2547] font-bold border-2 border-[#2B2547] flex items-center justify-center transition shadow-sm hover:shadow">
-            ❯
-          </button>
-        </div>
-      </div>
-
-      <!-- CAROUSEL TRACK -->
-      <div id="tiktokCarousel" class="flex gap-5 overflow-x-auto pb-4 pt-2 hide-scrollbar scroll-smooth snap-x">
-        
-        <div class="tiktok-slide-card flex-shrink-0 w-64 sm:w-72 group">
-          <a href="https://vt.tiktok.com/ZSpjWWytv/" target="_blank" rel="noopener noreferrer" class="block relative aspect-[9/16] rounded-3xl overflow-hidden border-3 border-[#2B2547] bg-[#1E1B2E] shadow-md hover:shadow-2xl transition-all duration-300 transform group-hover:-translate-y-2 group-hover:rotate-1">
-            <img src="assets/tiktok-1.jpg" alt="Waktu kirim paling tepat yang mana?" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            
-            <!-- GRADIENT OVERLAY -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/30 pointer-events-none"></div>
-
-            <!-- TOP BADGE: TIKTOK ICON -->
-            <div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-              <span class="bg-black/60 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5 border border-white/20">
-                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-                <span>Viral VT</span>
-              </span>
-              <span class="bg-[#F5917B] text-[#2B2547] text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                VT
-              </span>
-            </div>
-
-            <!-- CENTER PLAY BUTTON ICON -->
-            <div class="absolute inset-0 flex items-center justify-center">
-              <div class="w-14 h-14 rounded-full bg-[#F5917B] text-[#2B2547] flex items-center justify-center shadow-lg transform group-hover:scale-115 transition-transform duration-300 border-2 border-[#2B2547]">
-                <svg class="w-6 h-6 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-            </div>
-
-            <!-- BOTTOM INFO -->
-            <div class="absolute bottom-4 left-4 right-4 text-white pointer-events-none">
-              <span class="text-[11px] font-bold text-[#D8E55B] tracking-wide block mb-1">#Tips Ilustrator</span>
-              <h4 class="font-bold text-sm leading-snug line-clamp-2 text-white/95 group-hover:text-[#F5917B] transition-colors">Waktu kirim paling tepat yang mana?</h4>
-              <div class="flex items-center gap-1.5 mt-2.5 text-xs text-white/80 font-medium">
-                <span>Klik untuk tonton di TikTok</span>
-                <span class="group-hover:translate-x-1 transition-transform">→</span>
-              </div>
-            </div>
-          </a>
-        </div>
-        
-        <div class="tiktok-slide-card flex-shrink-0 w-64 sm:w-72 group">
-          <a href="https://vt.tiktok.com/ZSpj7CgTB/" target="_blank" rel="noopener noreferrer" class="block relative aspect-[9/16] rounded-3xl overflow-hidden border-3 border-[#2B2547] bg-[#1E1B2E] shadow-md hover:shadow-2xl transition-all duration-300 transform group-hover:-translate-y-2 group-hover:rotate-1">
-            <img src="assets/tiktok-2.jpg" alt="Dinamika Klien vs Ilustrator" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            
-            <!-- GRADIENT OVERLAY -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/30 pointer-events-none"></div>
-
-            <!-- TOP BADGE: TIKTOK ICON -->
-            <div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-              <span class="bg-black/60 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5 border border-white/20">
-                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-                <span>Populer</span>
-              </span>
-              <span class="bg-[#F5917B] text-[#2B2547] text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                VT
-              </span>
-            </div>
-
-            <!-- CENTER PLAY BUTTON ICON -->
-            <div class="absolute inset-0 flex items-center justify-center">
-              <div class="w-14 h-14 rounded-full bg-[#F5917B] text-[#2B2547] flex items-center justify-center shadow-lg transform group-hover:scale-115 transition-transform duration-300 border-2 border-[#2B2547]">
-                <svg class="w-6 h-6 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-            </div>
-
-            <!-- BOTTOM INFO -->
-            <div class="absolute bottom-4 left-4 right-4 text-white pointer-events-none">
-              <span class="text-[11px] font-bold text-[#D8E55B] tracking-wide block mb-1">#Storytelling VO</span>
-              <h4 class="font-bold text-sm leading-snug line-clamp-2 text-white/95 group-hover:text-[#F5917B] transition-colors">Dinamika Klien vs Ilustrator</h4>
-              <div class="flex items-center gap-1.5 mt-2.5 text-xs text-white/80 font-medium">
-                <span>Klik untuk tonton di TikTok</span>
-                <span class="group-hover:translate-x-1 transition-transform">→</span>
-              </div>
-            </div>
-          </a>
-        </div>
-        
-        <div class="tiktok-slide-card flex-shrink-0 w-64 sm:w-72 group">
-          <a href="https://vt.tiktok.com/ZSpj7Ch8p/" target="_blank" rel="noopener noreferrer" class="block relative aspect-[9/16] rounded-3xl overflow-hidden border-3 border-[#2B2547] bg-[#1E1B2E] shadow-md hover:shadow-2xl transition-all duration-300 transform group-hover:-translate-y-2 group-hover:rotate-1">
-            <img src="assets/tiktok-3.jpg" alt="Ngonten Faceless Sat-Set Pakai Avatar" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            
-            <!-- GRADIENT OVERLAY -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/30 pointer-events-none"></div>
-
-            <!-- TOP BADGE: TIKTOK ICON -->
-            <div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-              <span class="bg-black/60 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5 border border-white/20">
-                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-                <span>Creator Life</span>
-              </span>
-              <span class="bg-[#F5917B] text-[#2B2547] text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                VT
-              </span>
-            </div>
-
-            <!-- CENTER PLAY BUTTON ICON -->
-            <div class="absolute inset-0 flex items-center justify-center">
-              <div class="w-14 h-14 rounded-full bg-[#F5917B] text-[#2B2547] flex items-center justify-center shadow-lg transform group-hover:scale-115 transition-transform duration-300 border-2 border-[#2B2547]">
-                <svg class="w-6 h-6 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-            </div>
-
-            <!-- BOTTOM INFO -->
-            <div class="absolute bottom-4 left-4 right-4 text-white pointer-events-none">
-              <span class="text-[11px] font-bold text-[#D8E55B] tracking-wide block mb-1">#Tutorial & Demo</span>
-              <h4 class="font-bold text-sm leading-snug line-clamp-2 text-white/95 group-hover:text-[#F5917B] transition-colors">Ngonten Faceless Sat-Set Pakai Avatar</h4>
-              <div class="flex items-center gap-1.5 mt-2.5 text-xs text-white/80 font-medium">
-                <span>Klik untuk tonton di TikTok</span>
-                <span class="group-hover:translate-x-1 transition-transform">→</span>
-              </div>
-            </div>
-          </a>
-        </div>
-        
-        <div class="tiktok-slide-card flex-shrink-0 w-64 sm:w-72 group">
-          <a href="https://vt.tiktok.com/ZSpj7XmBN/" target="_blank" rel="noopener noreferrer" class="block relative aspect-[9/16] rounded-3xl overflow-hidden border-3 border-[#2B2547] bg-[#1E1B2E] shadow-md hover:shadow-2xl transition-all duration-300 transform group-hover:-translate-y-2 group-hover:rotate-1">
-            <img src="assets/tiktok-4.jpg" alt="Dari Gambar Diam Jadi Karakter Hidup" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            
-            <!-- GRADIENT OVERLAY -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/30 pointer-events-none"></div>
-
-            <!-- TOP BADGE: TIKTOK ICON -->
-            <div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-              <span class="bg-black/60 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5 border border-white/20">
-                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-                <span>SmoothieTuber</span>
-              </span>
-              <span class="bg-[#F5917B] text-[#2B2547] text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                VT
-              </span>
-            </div>
-
-            <!-- CENTER PLAY BUTTON ICON -->
-            <div class="absolute inset-0 flex items-center justify-center">
-              <div class="w-14 h-14 rounded-full bg-[#F5917B] text-[#2B2547] flex items-center justify-center shadow-lg transform group-hover:scale-115 transition-transform duration-300 border-2 border-[#2B2547]">
-                <svg class="w-6 h-6 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-            </div>
-
-            <!-- BOTTOM INFO -->
-            <div class="absolute bottom-4 left-4 right-4 text-white pointer-events-none">
-              <span class="text-[11px] font-bold text-[#D8E55B] tracking-wide block mb-1">#Behind The Scene</span>
-              <h4 class="font-bold text-sm leading-snug line-clamp-2 text-white/95 group-hover:text-[#F5917B] transition-colors">Dari Gambar Diam Jadi Karakter Hidup</h4>
-              <div class="flex items-center gap-1.5 mt-2.5 text-xs text-white/80 font-medium">
-                <span>Klik untuk tonton di TikTok</span>
-                <span class="group-hover:translate-x-1 transition-transform">→</span>
-              </div>
-            </div>
-          </a>
-        </div>
-        
-        <div class="tiktok-slide-card flex-shrink-0 w-64 sm:w-72 group">
-          <a href="https://vt.tiktok.com/ZSpj7kCmB/" target="_blank" rel="noopener noreferrer" class="block relative aspect-[9/16] rounded-3xl overflow-hidden border-3 border-[#2B2547] bg-[#1E1B2E] shadow-md hover:shadow-2xl transition-all duration-300 transform group-hover:-translate-y-2 group-hover:rotate-1">
-            <img src="assets/tiktok-5.jpg" alt="Ekspresi Reaktif Mengikuti Suara" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-            
-            <!-- GRADIENT OVERLAY -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/30 pointer-events-none"></div>
-
-            <!-- TOP BADGE: TIKTOK ICON -->
-            <div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-              <span class="bg-black/60 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1.5 border border-white/20">
-                <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
-                <span>Must Watch</span>
-              </span>
-              <span class="bg-[#F5917B] text-[#2B2547] text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
-                VT
-              </span>
-            </div>
-
-            <!-- CENTER PLAY BUTTON ICON -->
-            <div class="absolute inset-0 flex items-center justify-center">
-              <div class="w-14 h-14 rounded-full bg-[#F5917B] text-[#2B2547] flex items-center justify-center shadow-lg transform group-hover:scale-115 transition-transform duration-300 border-2 border-[#2B2547]">
-                <svg class="w-6 h-6 fill-current translate-x-0.5" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-            </div>
-
-            <!-- BOTTOM INFO -->
-            <div class="absolute bottom-4 left-4 right-4 text-white pointer-events-none">
-              <span class="text-[11px] font-bold text-[#D8E55B] tracking-wide block mb-1">#Voice Over Showcase</span>
-              <h4 class="font-bold text-sm leading-snug line-clamp-2 text-white/95 group-hover:text-[#F5917B] transition-colors">Ekspresi Reaktif Mengikuti Suara</h4>
-              <div class="flex items-center gap-1.5 mt-2.5 text-xs text-white/80 font-medium">
-                <span>Klik untuk tonton di TikTok</span>
-                <span class="group-hover:translate-x-1 transition-transform">→</span>
-              </div>
-            </div>
-          </a>
-        </div>
-        
-      </div>
-
-      <div class="mt-4 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-stone-500 border-t border-stone-100 pt-3 gap-2">
-        <span class="flex items-center gap-1 font-medium">
-          <span>👆</span> Geser ke samping untuk melihat 5 video pilihan
-        </span>
-        <a href="https://www.tiktok.com/@ukiran_anin" target="_blank" rel="noopener noreferrer" class="font-bold text-[#2B2547] hover:text-[#F5917B] flex items-center gap-1 underline">
-          <span>Buka Semua di Profil TikTok @ukiran_anin</span>
-          <span>↗</span>
-        </a>
-      </div>
-    </section>
-
-    <!-- CALL TO ACTION SECTION -->
-    <section class="p-10 sm:p-16 bg-[#F7A9BA] rounded-[48px] text-center space-y-6 border-3 border-[#2B2547] shadow-lg">
-      <img src="assets/smoothietuber-cup-logo.png" alt="SmoothieTuber Icon" class="h-24 w-auto mx-auto drop-shadow-md">
-      <h2 class="font-fraunces text-3xl sm:text-4xl md:text-5xl font-bold max-w-xl mx-auto leading-tight">
-        Yuk, cobain SmoothieTuber dan hidupkan avatarmu.
-      </h2>
-      <p class="text-sm sm:text-base text-[#2B2547]/85 max-w-md mx-auto leading-relaxed">
-        Buka di browser, unggah avatarmu, lalu tampil di livestream atau rekam videonya. Tanpa instal, langsung bisa dicoba.
-      </p>
-      <div class="pt-2">
-        <a href="https://lynk.id/ukiran_anin" target="_blank" rel="noopener noreferrer" class="inline-block bg-white hover:bg-stone-100 text-[#2B2547] font-extrabold px-10 py-4 rounded-full shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition text-base border-2 border-[#2B2547]">
-          Cobain sekarang
-        </a>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="bg-[#A9BDF0] border-t-2 border-[#2B2547] px-6 py-12 mt-12">
-    <div class="max-w-6xl mx-auto space-y-8">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 text-sm">
-        <div>
-          <h4 class="font-fraunces font-bold text-lg mb-3">Ikuti saya di sosial media</h4>
-          <div class="flex flex-wrap gap-3">
-            <a href="https://www.tiktok.com/@ukiran_anin" target="_blank" rel="noopener noreferrer" class="font-bold underline hover:text-white">TikTok</a>
-            <span>•</span>
-            <a href="https://www.linkedin.com/in/anindyaimas" target="_blank" rel="noopener noreferrer" class="font-bold underline hover:text-white">LinkedIn</a>
-            <span>•</span>
-            <a href="https://www.behance.net/anindyahastung" target="_blank" rel="noopener noreferrer" class="font-bold underline hover:text-white">Behance</a>
-            <span>•</span>
-            <a href="https://ukiran-anin-portfolio.netlify.app/" target="_blank" rel="noopener noreferrer" class="font-bold underline hover:text-white">Portfolio</a>
-          </div>
-        </div>
-        <div>
-          <h4 class="font-fraunces font-bold text-lg mb-3">Bantuan</h4>
-          <p class="space-y-1">
-            <a href="https://drive.google.com/file/d/1vekXJxTXI9CyvjjdQJSNEA_LCKMxiAQk/view?usp=share_link" target="_blank" rel="noopener noreferrer" class="hover:underline block">Panduan lengkap (PDF)</a>
-            <a href="mailto:anindyaimash@gmail.com" class="hover:underline block">Contact me</a>
-          </p>
-        </div>
-        <div>
-          <h4 class="font-fraunces font-bold text-lg mb-3">Tautan</h4>
-          <p class="space-y-1">
-            <a href="https://lynk.id/ukiran_anin" target="_blank" rel="noopener noreferrer" class="hover:underline block">Lynk.id Toko</a>
-            <a href="#creator" class="hover:underline block">Tentang Pembuat</a>
-          </p>
-        </div>
-      </div>
-      
-      <div class="text-xs text-[#2B2547]/80 border-t border-[#2B2547]/20 pt-6 flex flex-col sm:flex-row justify-between items-center gap-2">
-        <div>© 2026 SmoothieTuber by Ukiran Anin. All rights reserved.</div>
-        <div>Designed with 🍓 &amp; crafted for creators.</div>
-      </div>
+    <figcaption style="margin-top:12px;text-align:center;font-family:'Fraunces',serif;font-weight:700;font-size:18px;color:#2B2547">
+      Anin, drawing as usual ✦
+    </figcaption>
+    <div style="text-align:center;font-size:11px;opacity:0.75;margin-top:2px;font-weight:600">
+      (Sentuh / Hover untuk bicara 🎙️)
     </div>
-  </footer>
+  </div>
+</div>
 
-  <script>
-    function triggerTalking() {
-      const p = document.getElementById('polaroidBox');
-      p.classList.toggle('is-talking');
+</div>
+</div>
+
+<!-- DERETAN VIDEO TIKTOK -->
+<div style="max-width:1160px;margin:0 auto;padding:0 48px 120px" id="tiktok-videos">
+<div class="reveal" style="display:flex;flex-direction:column;gap:24px">
+
+<div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px">
+  <div style="max-width:640px;display:flex;flex-direction:column;gap:12px">
+    <span style="align-self:flex-start;background:#DEF7A0;padding:6px 20px;border-radius:999px;font-weight:700;font-size:14px">Konten nyata dengan SmoothieTuber</span>
+    <h2 style="margin:0;font-family:'Fraunces',serif;font-size:40px;line-height:1.15;font-weight:700">Lihat aksinya langsung di TikTok @ukiran_anin</h2>
+    <p style="margin:0;font-size:16px">Avatar 2D bergerak dan bereaksi langsung mengikuti suara rekaman. Klik salah satu video di bawah untuk menonton langsung di TikTok!</p>
+  </div>
+  <div style="display:flex;gap:10px">
+    <button onclick="scrollTikTok(-1)" style="all:unset;cursor:pointer;width:44px;height:44px;border-radius:50%;background:#FAF6EE;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;box-shadow:2px 2px 0 #2B2547">❮</button>
+    <button onclick="scrollTikTok(1)" style="all:unset;cursor:pointer;width:44px;height:44px;border-radius:50%;background:#FAF6EE;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:18px;box-shadow:2px 2px 0 #2B2547">❯</button>
+  </div>
+</div>
+
+<div id="tiktokCarousel" style="display:flex;gap:20px;overflow-x:auto;padding:12px 4px 24px;scroll-behavior:smooth" class="hide-scrollbar">
+
+  <!-- Card 1 -->
+  <div style="flex:0 0 250px" class="tiktok-card">
+    <a href="https://vt.tiktok.com/ZSpjWWytv/" target="_blank" rel="noopener noreferrer" style="display:block;position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:3px solid #2B2547;box-shadow:5px 5px 0 #F5917B;background:#1E1B2E">
+      <img src="assets/tiktok-1.jpg" alt="Video TikTok 1" style="width:100%;height:100%;object-fit:cover;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%)"></div>
+      <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px">TikTok VT</span></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+        <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
+        <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Tips Ilustrator</div>
+        <div style="font-size:14px;font-weight:700;line-height:1.3">Waktu kirim paling tepat yang mana?</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Card 2 -->
+  <div style="flex:0 0 250px" class="tiktok-card">
+    <a href="https://vt.tiktok.com/ZSpj7CgTB/" target="_blank" rel="noopener noreferrer" style="display:block;position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:3px solid #2B2547;box-shadow:5px 5px 0 #F5917B;background:#1E1B2E">
+      <img src="assets/tiktok-2.jpg" alt="Video TikTok 2" style="width:100%;height:100%;object-fit:cover;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%)"></div>
+      <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px">TikTok VT</span></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+        <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
+        <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Storytelling VO</div>
+        <div style="font-size:14px;font-weight:700;line-height:1.3">Dinamika Klien vs Ilustrator</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Card 3 -->
+  <div style="flex:0 0 250px" class="tiktok-card">
+    <a href="https://vt.tiktok.com/ZSpj7Ch8p/" target="_blank" rel="noopener noreferrer" style="display:block;position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:3px solid #2B2547;box-shadow:5px 5px 0 #F5917B;background:#1E1B2E">
+      <img src="assets/tiktok-3.jpg" alt="Video TikTok 3" style="width:100%;height:100%;object-fit:cover;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%)"></div>
+      <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px">TikTok VT</span></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+        <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
+        <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Creator Life</div>
+        <div style="font-size:14px;font-weight:700;line-height:1.3">Ngonten Faceless Sat-Set Pakai Avatar</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Card 4 -->
+  <div style="flex:0 0 250px" class="tiktok-card">
+    <a href="https://vt.tiktok.com/ZSpj7XmBN/" target="_blank" rel="noopener noreferrer" style="display:block;position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:3px solid #2B2547;box-shadow:5px 5px 0 #F5917B;background:#1E1B2E">
+      <img src="assets/tiktok-4.jpg" alt="Video TikTok 4" style="width:100%;height:100%;object-fit:cover;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%)"></div>
+      <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px">TikTok VT</span></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+        <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
+        <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Behind The Scene</div>
+        <div style="font-size:14px;font-weight:700;line-height:1.3">Dari Gambar Diam Jadi Karakter Hidup</div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Card 5 -->
+  <div style="flex:0 0 250px" class="tiktok-card">
+    <a href="https://vt.tiktok.com/ZSpj7kCmB/" target="_blank" rel="noopener noreferrer" style="display:block;position:relative;aspect-ratio:9/16;border-radius:24px;overflow:hidden;border:3px solid #2B2547;box-shadow:5px 5px 0 #F5917B;background:#1E1B2E">
+      <img src="assets/tiktok-5.jpg" alt="Video TikTok 5" style="width:100%;height:100%;object-fit:cover;display:block">
+      <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.4) 100%)"></div>
+      <div style="position:absolute;top:12px;left:12px"><span style="background:rgba(0,0,0,0.6);color:#fff;font-size:11px;font-weight:700;padding:4px 10px;border-radius:999px">TikTok VT</span></div>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+        <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+      </div>
+      <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
+        <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Voice Over</div>
+        <div style="font-size:14px;font-weight:700;line-height:1.3">Ekspresi Reaktif Mengikuti Suara</div>
+      </div>
+    </a>
+  </div>
+
+</div>
+
+<div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;opacity:0.8;border-top:1px solid rgba(43,37,71,0.15);padding-top:12px">
+  <span>Geser ke samping untuk melihat seluruh video</span>
+  <a href="https://www.tiktok.com/@ukiran_anin" target="_blank" rel="noopener noreferrer" style="font-weight:700;text-decoration:underline">Buka Profil TikTok @ukiran_anin →</a>
+</div>
+
+</div>
+</div>
+
+
+<div style="padding:0 48px 160px" id="beta">
+<div class="reveal" style="max-width:1000px;margin:0 auto;background:#F7A9BA;border-radius:56px;padding:96px 56px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:32px">
+<img src="assets/logo.png" alt="Logo SmoothieTuber" style="height:120px;width:auto;display:block">
+<h2 style="margin:0;font-family:'Fraunces',serif;font-size:44px;line-height:1.15;font-weight:700;max-width:640px">Yuk, cobain SmoothieTuber dan hidupkan avatarmu.</h2>
+<p style="margin:0;max-width:520px">Buka di browser, unggah avatarmu, lalu tampil di livestream atau rekam videonya. Tanpa instal, langsung bisa dicoba.</p>
+<a class="btn" style="background:#fff" href="https://lynk.id/ukiran_anin">Cobain sekarang</a>
+</div>
+</div>
+
+<div style="background:#A9BDF0;padding:96px 48px 48px">
+<div style="max-width:1160px;margin:0 auto;display:flex;flex-direction:column;gap:72px">
+<div style="display:flex;flex-wrap:wrap;gap:56px 72px">
+<div style="flex:2 1 320px;display:flex;flex-direction:column;gap:24px;max-width:420px">
+<span style="display:flex;align-items:center;gap:12px"><img src="assets/logo.png" alt="Logo SmoothieTuber" style="height:56px;width:auto;display:block"><img src="assets/wm.svg" alt="SmoothieTuber" style="height:34px;width:auto;display:block"></span>
+<p style="margin:0;font-size:16px">Avatar PNGTuber 2D yang hidup saat kamu bicara, langsung dari browser.</p>
+</div>
+<div style="flex:1 1 200px;display:flex;flex-direction:column;gap:16px;font-size:16px"><h3 style="margin:0;font-family:'Fraunces',serif;font-size:20px">Ikuti saya di sosial media</h3><div style="display:flex;flex-wrap:wrap;gap:12px"><a href="https://www.instagram.com/ukiran_anin/" target="_blank" rel="noopener" aria-label="Instagram ukiran_anin" style="width:48px;height:48px;border-radius:50%;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#2B2547" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".6"/></svg></a><a href="https://www.tiktok.com/@ukiran_anin" target="_blank" rel="noopener" aria-label="TikTok ukiran_anin" style="width:48px;height:48px;border-radius:50%;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#2B2547" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 4v10.2a3.4 3.4 0 1 1-3.4-3.4"/><path d="M14 4c.4 2.4 2 3.9 4.6 4.1"/></svg></a><a href="https://ukiran-anin-portfolio.netlify.app/" target="_blank" rel="noopener" aria-label="Website portofolio" style="width:48px;height:48px;border-radius:50%;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#2B2547" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg></a><a href="https://www.linkedin.com/in/anindyaimas" target="_blank" rel="noopener" aria-label="LinkedIn Anindya Imas" style="width:48px;height:48px;border-radius:50%;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#2B2547" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M8 10.5V16"/><circle cx="8" cy="7.8" r=".6"/><path d="M12 16v-5.5"/><path d="M12 12.8c0-1.4 1-2.3 2.3-2.3s2.2.9 2.2 2.4V16"/></svg></a><a href="https://www.behance.net/anindyahastung" target="_blank" rel="noopener" aria-label="Behance anindyahastung" style="width:48px;height:48px;border-radius:50%;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#2B2547" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 6.5v9.4h5a2.4 2.4 0 0 0 0-4.8h-5"/><path d="M3.5 11.1h4.4a2.3 2.3 0 0 0 0-4.6H3.5"/><path d="M14 6.5h6"/><path d="M14 12.2h6.5c0-1.8-1.3-3-3.2-3s-3.3 1.3-3.3 3.1 1.300 3.400 3.300 3.400c1.200 0 2.100-.5 2.600-1.300"/></svg></a></div></div>
+<div style="flex:1 1 200px;display:flex;flex-direction:column;gap:16px;font-size:16px"><h3 style="margin:0;font-family:'Fraunces',serif;font-size:20px">Bantuan</h3><a href="https://drive.google.com/file/d/1vekXJxTXI9CyvjjdQJSNEA_LCKMxiAQk/view?usp=share_link" target="_blank" rel="noopener" style="border-bottom:1px solid transparent">Panduan lengkap (PDF)</a><a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=anindyaimash@gmail.com" target="_blank" rel="noopener" style="border-bottom:1px solid transparent">Contact me</a></div>
+<div style="flex:1 1 200px;display:flex;flex-direction:column;gap:16px;font-size:16px"><h3 style="margin:0;font-family:'Fraunces',serif;font-size:20px">Tautan</h3><a href="#illustrator" style="border-bottom:1px solid transparent">Komisi avatar</a><a href="https://lynk.id/ukiran_anin" target="_blank" rel="noopener" style="border-bottom:1px solid transparent">Lynk.id</a></div>
+</div>
+<div style="border-top:1px solid rgba(43,37,71,.25);padding-top:32px;font-size:14px">&copy; 2026 SmoothieTuber. All rights reserved.</div>
+</div>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":2500}}'>
+class Component extends DCLogic {
+componentDidMount() {
+if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+setTimeout(() => {
+try {
+const roots = [document];
+const host = document.querySelector('x-dc');
+if (host && host.shadowRoot) roots.push(host.shadowRoot);
+const els = [];
+roots.forEach((r) => r.querySelectorAll('.reveal').forEach((e) => els.push(e)));
+if (!els.length || !('IntersectionObserver' in window)) return;
+const io = new IntersectionObserver((entries) => {
+entries.forEach((en) => {
+const e = en.target;
+if (en.isIntersecting) {
+e.style.transitionDelay = (e.getAttribute('data-delay') || 0) + 'ms';
+e.classList.add('rv-in');
+io.unobserve(e);
+} else if (en.boundingClientRect.bottom < 0) {
+e.classList.add('rv-in', 'rv-now');
+io.unobserve(e);
+}
+});
+}, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+els.forEach((e) => { e.classList.add('rv-hide'); io.observe(e); });
+} catch (err) {}
+}, 150);
+}
+renderVals() { return {}; }
+}
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Reveal animation
+  if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const els = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting) {
+            en.target.style.transitionDelay = (en.target.getAttribute('data-delay') || 0) + 'ms';
+            en.target.classList.add('rv-in');
+            io.unobserve(en.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+      els.forEach((e) => { e.classList.add('rv-hide'); io.observe(e); });
     }
+  }
 
+  // Talking idle pulse
+  const p = document.getElementById('polaroidBox');
+  if (p) {
     setInterval(() => {
-      const p = document.getElementById('polaroidBox');
-      if (p && !p.matches(':hover') && !p.classList.contains('is-talking')) {
+      if (!p.matches(':hover') && !p.classList.contains('is-talking')) {
         p.classList.add('is-talking');
-        setTimeout(() => {
-          p.classList.remove('is-talking');
-        }, 800);
+        setTimeout(() => { p.classList.remove('is-talking'); }, 800);
       }
     }, 4500);
+  }
+});
 
-    function scrollTikTok(direction) {
-      const container = document.getElementById('tiktokCarousel');
-      if (container) {
-        const scrollAmount = 300 * direction;
-        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-      }
-    }
-  </script>
+function triggerTalking() {
+  const p = document.getElementById('polaroidBox');
+  if (p) p.classList.toggle('is-talking');
+}
+
+function scrollTikTok(direction) {
+  const container = document.getElementById('tiktokCarousel');
+  if (container) {
+    container.scrollBy({ left: 270 * direction, behavior: 'smooth' });
+  }
+}
+</script>
+
 </body>
 </html>
