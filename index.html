@@ -26,7 +26,7 @@ a{color:inherit;text-decoration:none}
   border: 3px solid #2B2547;
   border-radius: 8px;
   box-shadow: 8px 8px 0px #F5917B;
-  padding: 14px 14px 38px;
+  padding: 14px 14px 22px;
   transform: rotate(-2.5deg);
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
   cursor: pointer;
@@ -99,7 +99,7 @@ a{color:inherit;text-decoration:none}
   border: 3px solid #2B2547;
   border-radius: 8px;
   box-shadow: 8px 8px 0px #F5917B;
-  padding: 14px 14px 38px;
+  padding: 14px 14px 22px;
   transform: rotate(-2.5deg);
   transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
   cursor: pointer;
@@ -315,16 +315,89 @@ a{color:inherit;text-decoration:none}
 <div style="max-width:1160px;margin:0 auto;padding:0 48px 120px;display:flex;flex-wrap:wrap;gap:72px;align-items:center" id="creator">
   <!-- Avatar Box: BLUE BACKGROUND (#A9BDF0), NOT GREEN (#D8E55B)! -->
   <div class="reveal" style="flex:1 1 320px;max-width:440px;background:#A9BDF0;border-radius:56px;padding:36px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(43,37,71,0.08)">
-    <div id="polaroidBox" class="polaroid-frame" onclick="triggerTalking()">
+    <div id="polaroidBox" class="polaroid-frame" onclick="triggerTalking()" title="Klik atau hover untuk berinteraksi dengan Anin!">
       <div class="polaroid-window">
         <img src="assets/anin-closed.png" alt="Avatar Anin Menggambar" class="avatar-pop-closed">
         <img src="assets/anin-open.png" alt="Avatar Anin Berbicara" class="avatar-pop-open">
-      </div>
-      <figcaption style="margin-top:12px;text-align:center;font-family:'Fraunces',serif;font-weight:700;font-size:18px;color:#2B2547">
-        Anin, drawing as usual ✦
-      </figcaption>
-      <div style="text-align:center;font-size:11px;opacity:0.75;margin-top:2px;font-weight:600">
-        (Sentuh / Hover untuk bicara 🎙️)
+        <svg viewBox="0 0 300 74" class="desk-workstation-svg" xmlns="http://www.w3.org/2000/svg" style="position:absolute;left:-3%;width:106%;bottom:-18px;z-index:4;pointer-events:none">
+  <!-- DESK PLANK (Meja di bawah iPad) -->
+  <defs>
+    <filter id="deskShadow" x="-5%" y="-10%" width="110%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#2B2547" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <!-- Meja surface -->
+  <g filter="url(#deskShadow)">
+    <rect x="6" y="42" width="288" height="24" rx="4" fill="#FBF6EC" stroke="#2B2547" stroke-width="3"/>
+    <rect x="6" y="58" width="288" height="8" fill="#E4E1EC" stroke="#2B2547" stroke-width="2"/>
+    <line x1="18" y1="48" x2="282" y2="48" stroke="#DAD6E4" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="40 8 20 6"/>
+  </g>
+
+  <!-- MIKROFON MEJA (Kiri) -->
+  <g class="desk-prop-mic">
+    <!-- Cable -->
+    <path d="M 42 54 C 32 58 22 56 12 60" fill="none" stroke="#2B2547" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Tripod / Round Desk Base -->
+    <ellipse cx="42" cy="53" rx="16" ry="5" fill="#2B2547"/>
+    <ellipse cx="42" cy="52" rx="12" ry="3" fill="#1E1B2E"/>
+    <!-- Stem / Pole -->
+    <rect x="40" y="26" width="4.5" height="26" fill="#2B2547" rx="2"/>
+    <!-- U-Mount (Yoke) -->
+    <path d="M 27 22 C 27 36 57 36 57 22" fill="none" stroke="#2B2547" stroke-width="3.2" stroke-linecap="round"/>
+    <circle cx="27" cy="22" r="2.8" fill="#F5917B" stroke="#2B2547" stroke-width="1"/>
+    <circle cx="57" cy="22" r="2.8" fill="#F5917B" stroke="#2B2547" stroke-width="1"/>
+    <!-- Mic Body (Capsule) angled slightly toward Anin -->
+    <g transform="rotate(8 42 19)">
+      <rect x="33" y="3" width="18" height="28" rx="9" fill="#2B2547" stroke="#2B2547" stroke-width="1"/>
+      <!-- Grille -->
+      <rect x="35" y="5" width="14" height="12" rx="6" fill="#1E1B2E"/>
+      <line x1="37" y1="9" x2="47" y2="9" stroke="#8D88A3" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="37" y1="12.5" x2="47" y2="12.5" stroke="#8D88A3" stroke-width="1.2" stroke-linecap="round"/>
+      <!-- Color Accent Ring (Coral Pink) -->
+      <line x1="33" y1="18" x2="51" y2="18" stroke="#F5917B" stroke-width="2.2"/>
+      <!-- Status LED -->
+      <circle cx="42" cy="24" r="1.8" fill="#DEF7A0"/>
+    </g>
+  </g>
+
+  <!-- HAPE DI TRIPOD MEJA (Kanan) -->
+  <g class="desk-prop-phone">
+    <!-- Tripod Legs -->
+    <line x1="256" y1="42" x2="238" y2="57" stroke="#2B2547" stroke-width="3" stroke-linecap="round"/>
+    <line x1="256" y1="42" x2="256" y2="59" stroke="#2B2547" stroke-width="3" stroke-linecap="round"/>
+    <line x1="256" y1="42" x2="274" y2="57" stroke="#2B2547" stroke-width="3" stroke-linecap="round"/>
+    <!-- Tripod rubber feet -->
+    <circle cx="238" cy="57" r="2" fill="#2B2547"/>
+    <circle cx="256" cy="59" r="2" fill="#2B2547"/>
+    <circle cx="274" cy="57" r="2" fill="#2B2547"/>
+    <!-- Tripod Neck & Ball Head -->
+    <rect x="254" y="32" width="4.5" height="11" fill="#2B2547" rx="2"/>
+    <rect x="246" y="30" width="20" height="5" fill="#2B2547" rx="2.5"/>
+    <!-- Phone tilted slightly toward Anin -->
+    <g transform="rotate(-7 256 20)">
+      <!-- Phone Body -->
+      <rect x="243" y="0" width="26" height="44" rx="6" fill="#2B2547" stroke="#2B2547" stroke-width="1"/>
+      <!-- Phone Screen -->
+      <rect x="245.5" y="2.5" width="21" height="39" rx="4.5" fill="#FAF8F5"/>
+      <!-- Dynamic Island / Speaker -->
+      <rect x="252.5" y="4.5" width="7" height="2.2" rx="1.1" fill="#2B2547"/>
+      <!-- LIVE Badge -->
+      <rect x="247.5" y="8.5" width="9" height="4" rx="1.2" fill="#F5917B"/>
+      <circle cx="249.2" cy="10.5" r="0.9" fill="#FFFFFF"/>
+      <!-- Mini Preview: Anin avatar on stream -->
+      <circle cx="256" cy="22" r="5.5" fill="#A9BDF0"/>
+      <circle cx="253.8" cy="20.5" r="0.8" fill="#2B2547"/>
+      <circle cx="258.2" cy="20.5" r="0.8" fill="#2B2547"/>
+      <path d="M 254.2 23 Q 256 25 257.8 23" fill="none" stroke="#2B2547" stroke-width="0.9" stroke-linecap="round"/>
+      <!-- Stream Chat Bubble Accents -->
+      <rect x="247.5" y="30" width="13" height="2.8" rx="1.2" fill="#DEF7A0"/>
+      <rect x="247.5" y="34.5" width="10" height="2.8" rx="1.2" fill="#ECE9F3"/>
+      <!-- Heart floating on stream -->
+      <path d="M 263 32 C 263 30.5 264.5 30 265.2 31 C 266 30 267.5 30.5 267.5 32 C 267.5 33.5 265.2 35 265.2 35 C 265.2 35 263 33.5 263 32 Z" fill="#F7A9BA"/>
+    </g>
+  </g>
+</svg>
       </div>
     </div>
   </div>
@@ -401,8 +474,8 @@ a{color:inherit;text-decoration:none}
             <div style="width:50px;height:50px;border-radius:50%;background:#F5917B;border:2px solid #2B2547;display:flex;align-items:center;justify-content:center;color:#2B2547"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
           </div>
           <div style="position:absolute;bottom:14px;left:14px;right:14px;color:#fff">
-            <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Creator Life</div>
-            <div style="font-size:14px;font-weight:700;line-height:1.3">Ngonten Faceless Sat-Set Pakai Avatar</div>
+            <div style="font-size:11px;font-weight:700;color:#DEF7A0;margin-bottom:4px">#Live Streaming</div>
+            <div style="font-size:14px;font-weight:700;line-height:1.3">Live Streaming Pakai SmoothieTuber</div>
           </div>
         </a>
       </div>
